@@ -23,10 +23,8 @@ export default function HomePage() {
         title="Home"
         description="O estado da empresa agora."
         right={
-          <Button asChild className="font-heading">
-            <Link href="/reuniao">
-              <MessagesSquare className="size-4 mr-1" /> Reunião rápida com HELIOS
-            </Link>
+          <Button render={<Link href="/reuniao" />} className="font-heading">
+            <MessagesSquare className="size-4 mr-1" /> Reunião rápida com HELIOS
           </Button>
         }
       />

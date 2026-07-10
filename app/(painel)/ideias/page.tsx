@@ -57,10 +57,8 @@ export default function IdeiasPage() {
         description="De onde saem os lançamentos: ideias internas, garimpo da Busca e marcas ativas."
         right={
           <Dialog>
-            <DialogTrigger asChild>
-              <Button className="font-heading">
-                <Sparkles className="size-4 mr-1" /> Avaliar nova ideia
-              </Button>
+            <DialogTrigger render={<Button className="font-heading" />}>
+              <Sparkles className="size-4 mr-1" /> Avaliar nova ideia
             </DialogTrigger>
             <DialogContent className="max-w-xl">
               <DialogHeader>

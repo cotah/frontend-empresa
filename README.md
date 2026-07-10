@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CAPIVAREX — Command Deck
 
-## Getting Started
+Cockpit da CAPIVAREX: um painel único onde o Henrique conversa com o CEO (HELIOS),
+aprova ideias e gastos, acompanha o financeiro (ATLAS), dispara lançamentos e vê a
+atividade de todos os agentes da empresa.
 
-First, run the development server:
+## Arquitetura
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+Browser ──▶ Next.js (este repo) ──▶ n8n / CFO Railway / Busca Railway / Supabase
+            │
+            ├─ app/(painel)/*   → telas (client components)
+            ├─ app/api/*        → BFF: 19 rotas que fazem proxy dos upstreams
+            ├─ lib/server/*     → camada única de upstream (chaves só no servidor)
+            └─ middleware.ts    → auth por cookie (senha única, APP_PASSWORD)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Regra de ouro: **o browser nunca fala com n8n/CFO/Busca/Supabase direto** — só com
+`/api/*`. Todas as chaves vivem em env vars do servidor.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Telas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Rota | O que faz |
+| --- | --- |
+| `/login` | Senha única (`APP_PASSWORD`) → cookie httponly |
+| `/` | Home: visão geral com stats e pendências |
+| `/reuniao` | Chat com o CEO (HELIOS) |
+| `/aprovacoes` | Aprovar/rejeitar ideias e gastos pendentes |
+| `/financeiro` | Resumo do CFO (ATLAS), gráfico, perguntas e relatório semanal |
+| `/ideias` | Estoque de ideias internas + oportunidades da Busca + marcas |
+| `/producao` | Disparar lançamento + mapa estático das 9 fases da esteira |
+| `/agentes` | Roster de agentes + despacho de tarefas (direto ou via HELIOS) |
+| `/atividade` | Registro de trabalho (work_log) + lições aprendidas |
+| `/apis` | Anotação manual de saldos por provedor (localStorage) |
 
-## Learn More
+## Como rodar
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm install
+cp .env.example .env.local   # e preencha as chaves
+npm run dev                  # http://localhost:3000
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Sem `APP_PASSWORD` configurada, tudo fica bloqueado (por design).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Env vars (todas server-side)
 
-## Deploy on Vercel
+| Var | Para quê |
+| --- | --- |
+| `APP_PASSWORD` | Senha do cockpit (dono único) |
+| `N8N_BASE` | Base dos webhooks n8n (CEO, gates, dispatch) |
+| `CFO_BASE` / `CFO_API_KEY` | CFO Railway (FastAPI) |
+| `BUSCA_BASE` / `READ_API_KEY` / `CONTROL_API_KEY` | Busca Railway (market-intelligence) |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` | Supabase (Cérebro) — service key só no servidor |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy (Vercel)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Importar o repo na Vercel (framework: Next.js, zero config).
+2. Em **Settings → Environment Variables**, cadastrar todas as vars da tabela acima.
+3. Deploy. O middleware protege todas as rotas — sem senha, nada abre.
+
+## Stack
+
+Next.js 15 (App Router) · TypeScript · Tailwind v4 · shadcn/ui · lucide-react ·
+recharts · react-markdown. Tema dark "Command Deck" em `app/globals.css`.

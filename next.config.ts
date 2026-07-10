@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Evita o Next confundir o workspace root com um lockfile solto em ~
+  turbopack: { root: __dirname },
 };
 
 export default nextConfig;
