@@ -16,13 +16,20 @@ Cockpit da CAPIVAREX (spec: "CAPIVAREX — Especificação do Frontend").
 - **Validado:** `npm run build` passa sem erros nem warnings; smoke test com dev server
   (login → 307/200, telas novas 200, erro legível sem chaves de upstream)
 
+## ✅ Feito depois do MVP (11/07/2026)
+
+- **Esteira ao vivo em `/producao`** (Bloco de Junção, spec §9): runs, stepper real,
+  portões com aprovar/rejeitar, avançar (maxDuration 300).
+- **`/revisao` — Revisão de Criação** (spec §10): galeria de `creation_assets` por
+  `asset_type`, preparar idempotente, decidir peça a peça, filtro + contador.
+  BFF: `/api/review/{preparar,decidir,assets}`. Só `status=approved` vai pro ar.
+- **Deploy Vercel em produção:** https://capiva-front.vercel.app (env vars cadastradas,
+  deploy via `npx vercel --prod`).
+
 ## ⏳ Próximos passos
 
-1. **Preencher `.env.local`** (copiar de `.env.example`) e testar contra os upstreams reais
-   (n8n, CFO Railway, Busca Railway, Supabase).
-2. **Deploy Vercel:** importar repo + cadastrar env vars em Settings → Environment Variables.
-3. **Bloco de Junção (futuro):** tracking real da esteira em `/producao` — tabela
-   `orchestration_runs` + endpoints 🟡 do spec.
+1. Rodar um lançamento real de ponta a ponta (Criação → `/revisao` → Publicação/Portão 5).
+2. Polir a Publicação quando o PROVISION estiver consumindo os assets aprovados.
 
 ## Notas técnicas
 
