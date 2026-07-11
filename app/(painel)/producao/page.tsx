@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, DoorOpen, Loader2, Rocket, StepForward, X } from "lucide-react";
+import Link from "next/link";
+import { Check, DoorOpen, Images, Loader2, Rocket, StepForward, X } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { AsyncPanel } from "@/components/async-panel";
 import { SmartOutput } from "@/components/smart-output";
@@ -105,6 +106,9 @@ export default function ProducaoPage() {
     advancing || (run.data?.status === "running" && currentStep?.kind === "phase" && currentStep.slow);
   const canAdvance =
     !!run.data && run.data.status === "awaiting_gate" && !gates.loading && pendingGates.length === 0;
+  // Run chegou na Criação (ou terminou) → dá pra revisar as peças geradas.
+  const criacaoIdx = STEPS.findIndex((s) => s.kind === "phase" && s.key === "criacao");
+  const canReview = !!run.data && (run.data.status === "done" || current >= criacaoIdx);
 
   async function start() {
     setStarting(true);
@@ -285,6 +289,17 @@ export default function ProducaoPage() {
                     <div className="label-mono mb-1">último resumo</div>
                     <SmartOutput data={run.data.last_summary} />
                   </div>
+                )}
+
+                {/* Revisar peças geradas na fase Criação */}
+                {canReview && (
+                  <Button
+                    variant="outline"
+                    className="mt-4 w-full font-heading"
+                    render={<Link href={`/revisao?run_id=${activeRunId}`} />}
+                  >
+                    <Images className="size-4 mr-1" /> Revisar peças da Criação
+                  </Button>
                 )}
 
                 {/* Avançar: portão aprovado, próxima fase liberada */}

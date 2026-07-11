@@ -117,6 +117,35 @@ export interface OrchestrationRun {
   updated_at?: string | null;
 }
 
+/** Shapes da Revisão de Criação (seção 10 da especificação). */
+
+export type AssetType =
+  | "copy"
+  | "image"
+  | "video"
+  | "landing"
+  | "email"
+  | "social_post"
+  | "ads"
+  | "seo";
+
+export interface CreationAsset {
+  id: string;
+  asset_key: string;
+  run_id: string;
+  product_name?: string | null;
+  agent: string;
+  asset_type: AssetType;
+  title?: string | null;
+  content_text?: string | null;
+  media_url?: string | null;
+  status: PendingStatus;
+  decided_by?: string | null;
+  decision_note?: string | null;
+  created_at: string;
+  decided_at?: string | null;
+}
+
 export interface GateApproval {
   id: string;
   run_id: string;
