@@ -7,6 +7,9 @@ const STYLES: Record<string, string> = {
   done: "bg-success/12 text-success border-success/40",
   error: "bg-danger/12 text-danger border-danger/40",
   skipped: "bg-muted text-muted-foreground border-border",
+  running: "bg-primary/12 text-primary border-primary/40",
+  awaiting_gate: "bg-warning/12 text-warning border-warning/40",
+  aborted: "bg-muted text-muted-foreground border-border",
 };
 
 const LABELS: Record<string, string> = {
@@ -16,6 +19,9 @@ const LABELS: Record<string, string> = {
   done: "ok",
   error: "erro",
   skipped: "pulado",
+  running: "rodando",
+  awaiting_gate: "no portão",
+  aborted: "abortado",
 };
 
 export function StatusBadge({ status }: { status: string }) {

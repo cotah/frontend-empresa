@@ -100,3 +100,34 @@ export interface ApprovalsCount {
   spending: number;
   total: number;
 }
+
+/** Shapes da esteira / Bloco de Junção (seção 9 da especificação). */
+
+export type RunStatus = "running" | "awaiting_gate" | "done" | "aborted" | "error";
+
+export interface OrchestrationRun {
+  id: string;
+  product_name: string;
+  phase: string | null;
+  gate: string | null;
+  status: RunStatus;
+  data?: Record<string, unknown> | null;
+  last_summary?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface GateApproval {
+  id: string;
+  run_id: string;
+  product_name?: string | null;
+  phase?: string | null;
+  gate: string;
+  summary?: string | null;
+  payload?: Record<string, unknown> | null;
+  status: PendingStatus;
+  decided_by?: string | null;
+  decision_note?: string | null;
+  created_at: string;
+  decided_at?: string | null;
+}
