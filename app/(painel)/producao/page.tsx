@@ -132,7 +132,13 @@ export default function ProducaoPage() {
     try {
       await postJson("/api/esteira/avancar", { run_id: activeRunId });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erro ao avançar");
+      // Fases longas (Criação) podem estourar o timeout do proxy; o n8n segue
+      // rodando e o polling do run mostra o progresso.
+      setError(
+        e instanceof Error
+          ? `${e.message} — se a fase seguiu rodando, o status acima atualiza sozinho.`
+          : "Erro ao avançar",
+      );
     } finally {
       setAdvancing(false);
       run.reload();

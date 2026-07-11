@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { n8nPost } from "@/lib/server/upstream";
 import { fail } from "@/lib/server/route-helpers";
 
-/** A fase Criação roda 8 agentes (~10-12 min) — sem isso a function estoura os 300s default. */
-export const maxDuration = 800;
+/**
+ * Máximo do plano Hobby. A fase Criação (8 agentes, ~10-12 min) pode estourar
+ * esse teto — o n8n segue rodando e a tela acompanha via polling do run.
+ */
+export const maxDuration = 300;
 
 /** Roda a próxima fase do run e para no portão seguinte (status awaiting_gate). */
 export async function POST(req: NextRequest) {
