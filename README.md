@@ -10,9 +10,9 @@ atividade de todos os agentes da empresa.
 Browser ──▶ Next.js (este repo) ──▶ n8n / CFO Railway / Busca Railway / Supabase
             │
             ├─ app/(painel)/*   → telas (client components)
-            ├─ app/api/*        → BFF: 19 rotas que fazem proxy dos upstreams
+            ├─ app/api/*        → BFF: rotas que fazem proxy dos upstreams
             ├─ lib/server/*     → camada única de upstream (chaves só no servidor)
-            └─ middleware.ts    → auth por cookie (senha única, APP_PASSWORD)
+            └─ proxy.ts         → auth por cookie (senha única, APP_PASSWORD)
 ```
 
 Regra de ouro: **o browser nunca fala com n8n/CFO/Busca/Supabase direto** — só com
@@ -28,7 +28,8 @@ Regra de ouro: **o browser nunca fala com n8n/CFO/Busca/Supabase direto** — s�
 | `/aprovacoes` | Aprovar/rejeitar ideias e gastos pendentes |
 | `/financeiro` | Resumo do CFO (ATLAS), gráfico, perguntas e relatório semanal |
 | `/ideias` | Estoque de ideias internas + oportunidades da Busca + marcas |
-| `/producao` | Disparar lançamento + mapa estático das 9 fases da esteira |
+| `/producao` | Disparar lançamento + acompanhar a esteira ao vivo (fases, portões, avançar) |
+| `/revisao` | Galeria das peças da Criação — aprovar/rejeitar uma a uma antes de ir pro ar |
 | `/agentes` | Roster de agentes + despacho de tarefas (direto ou via HELIOS) |
 | `/atividade` | Registro de trabalho (work_log) + lições aprendidas |
 | `/apis` | Anotação manual de saldos por provedor (localStorage) |
@@ -61,5 +62,5 @@ Sem `APP_PASSWORD` configurada, tudo fica bloqueado (por design).
 
 ## Stack
 
-Next.js 15 (App Router) · TypeScript · Tailwind v4 · shadcn/ui · lucide-react ·
+Next.js 16 (App Router) · TypeScript · Tailwind v4 · shadcn/ui · lucide-react ·
 recharts · react-markdown. Tema dark "Command Deck" em `app/globals.css`.
