@@ -31,11 +31,12 @@ const TYPE_LABELS: Record<AssetType, string> = {
   seo: "seo",
 };
 
+// "pendentes" primeiro e como default — é a fila de trabalho; decididas saem dela na hora.
 const FILTERS: Array<{ key: "all" | PendingStatus; label: string }> = [
-  { key: "all", label: "todas" },
   { key: "pending", label: "pendentes" },
   { key: "approved", label: "aprovadas" },
   { key: "rejected", label: "rejeitadas" },
+  { key: "all", label: "todas" },
 ];
 
 /** Preview de uma peça conforme o asset_type (URLs prontas — só exibe). */
@@ -148,7 +149,7 @@ function AssetPreview({ asset }: { asset: CreationAsset }) {
 function RevisaoContent() {
   const searchParams = useSearchParams();
   const [activeRunId, setActiveRunId] = useState<string | null>(searchParams.get("run_id"));
-  const [filter, setFilter] = useState<"all" | PendingStatus>("all");
+  const [filter, setFilter] = useState<"all" | PendingStatus>("pending");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [preparing, setPreparing] = useState(false);
@@ -160,7 +161,7 @@ function RevisaoContent() {
     activeRunId ? `/api/review/assets?run_id=${activeRunId}` : null,
     15_000,
   );
-  const { reload: reloadAssets } = assets;
+  const { reload: reloadAssets, setData: setAssets } = assets;
 
   // Sem run selecionado (nem via ?run_id=): retoma o mais recente.
   useEffect(() => {
@@ -192,6 +193,14 @@ function RevisaoContent() {
         decision,
         note: notes[asset.id] || undefined,
       });
+      // Atualização otimista: o card sai de "pendentes" na hora, sem esperar o polling.
+      setAssets((prev) =>
+        prev?.map((a) =>
+          a.id === asset.id
+            ? { ...a, status: decision, decision_note: notes[asset.id] || a.decision_note }
+            : a,
+        ) ?? prev,
+      );
       reloadAssets();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro ao decidir peça");
@@ -205,6 +214,8 @@ function RevisaoContent() {
   const countFor = (key: "all" | PendingStatus) =>
     key === "all" ? list.length : list.filter((a) => a.status === key).length;
   const visible = filter === "all" ? list : list.filter((a) => a.status === filter);
+  // Abas de decididas são só leitura (selo + nota); "todas" mantém os botões pra mudar decisão.
+  const readOnly = filter === "approved" || filter === "rejected";
   const activeRun = runs.data?.find((r) => r.id === activeRunId);
 
   return (
@@ -259,6 +270,14 @@ function RevisaoContent() {
             emptyMessage="Nenhuma peça ainda — roda a fase Criação na Linha de Produção primeiro."
             onRetry={reloadAssets}
           >
+            {/* Aba sem peças (ex.: tudo revisado em "pendentes") — evita grid vazio mudo. */}
+            {visible.length === 0 && (
+              <p className="rounded-md border border-border bg-card p-4 text-sm text-muted-foreground">
+                {filter === "pending"
+                  ? "Nenhuma peça pendente — tudo revisado por aqui."
+                  : "Nenhuma peça nesta aba."}
+              </p>
+            )}
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {visible.map((a) => (
                 <div
@@ -292,29 +311,33 @@ function RevisaoContent() {
                     </p>
                   )}
 
-                  <Textarea
-                    value={notes[a.id] ?? ""}
-                    onChange={(e) => setNotes((n) => ({ ...n, [a.id]: e.target.value }))}
-                    placeholder="Nota da decisão (opcional)…"
-                    className="mt-3 min-h-12 text-sm"
-                  />
-                  <div className="flex gap-2 pt-3">
-                    <Button
-                      className="flex-1 font-heading bg-success text-background hover:bg-success/85"
-                      disabled={busyId === a.id || a.status === "approved"}
-                      onClick={() => decide(a, "approved")}
-                    >
-                      <Check className="size-4 mr-1" /> Aprovar
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1 font-heading border-danger/50 text-danger hover:bg-danger/10"
-                      disabled={busyId === a.id || a.status === "rejected"}
-                      onClick={() => decide(a, "rejected")}
-                    >
-                      <X className="size-4 mr-1" /> Rejeitar
-                    </Button>
-                  </div>
+                  {!readOnly && (
+                    <>
+                      <Textarea
+                        value={notes[a.id] ?? ""}
+                        onChange={(e) => setNotes((n) => ({ ...n, [a.id]: e.target.value }))}
+                        placeholder="Nota da decisão (opcional)…"
+                        className="mt-3 min-h-12 text-sm"
+                      />
+                      <div className="flex gap-2 pt-3">
+                        <Button
+                          className="flex-1 font-heading bg-success text-background hover:bg-success/85"
+                          disabled={busyId === a.id || a.status === "approved"}
+                          onClick={() => decide(a, "approved")}
+                        >
+                          <Check className="size-4 mr-1" /> Aprovar
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="flex-1 font-heading border-danger/50 text-danger hover:bg-danger/10"
+                          disabled={busyId === a.id || a.status === "rejected"}
+                          onClick={() => decide(a, "rejected")}
+                        >
+                          <X className="size-4 mr-1" /> Rejeitar
+                        </Button>
+                      </div>
+                    </>
+                  )}
                   <div className="mt-2 flex items-center justify-between font-mono text-[10px] text-muted-foreground">
                     <span className="truncate">{a.asset_key}</span>
                     <span className="shrink-0">{fmtDate(a.created_at)}</span>
@@ -342,7 +365,7 @@ function RevisaoContent() {
                 key={r.id}
                 onClick={() => {
                   setActiveRunId(r.id);
-                  setFilter("all");
+                  setFilter("pending");
                 }}
                 className={cn(
                   "flex w-full items-center justify-between gap-3 border-b border-border bg-card px-4 py-3 text-left text-sm last:border-b-0 hover:bg-muted/40",

@@ -38,7 +38,8 @@ export function useApi<T>(url: string | null, pollMs?: number) {
     }
   }, [reload, pollMs]);
 
-  return { data, error, loading, reload };
+  // setData permite atualização otimista (ex.: Revisão marca a peça decidida na hora).
+  return { data, error, loading, reload, setData };
 }
 
 /** POST JSON num endpoint /api/* com erro legível. */
