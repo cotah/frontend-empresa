@@ -60,20 +60,52 @@ function AssetPreview({ asset }: { asset: CreationAsset }) {
   }
 
   if (type === "video") {
+    // .mp4 = vídeo final tocável; senão media_url é keyframe e o robô ainda
+    // preenche o mp4 (job_set_id) — o polling da tela troca pra player sozinho.
+    const isMp4 = /\.mp4$/i.test((url ?? "").split("?")[0]);
+    const processing = !isMp4 && !!asset.job_set_id;
     return (
       <div className="space-y-2">
-        {url && (
-          <>
-            <video src={url} controls preload="metadata" className="max-h-72 w-full rounded-md border border-border bg-black" />
-            <a
-              href={url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 font-mono text-[11px] text-primary hover:underline"
+        {isMp4 && url && (
+          // Vídeo vertical 9:16 — limita por altura pra não estourar o layout.
+          <video
+            src={url}
+            controls
+            playsInline
+            preload="metadata"
+            className="max-h-[520px] w-full rounded-xl border border-border bg-black"
+          />
+        )}
+        {processing && (
+          <div className="relative">
+            {url && (
+              // eslint-disable-next-line @next/next/no-img-element -- URL externa dinâmica (Supabase/CDN)
+              <img
+                src={url}
+                alt={title ?? asset.asset_key}
+                loading="lazy"
+                className="max-h-[520px] w-full rounded-xl border border-border object-contain bg-black"
+              />
+            )}
+            <span
+              className={cn(
+                "flex items-center gap-1.5 rounded-sm border border-warning/40 bg-background/85 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-warning backdrop-blur-sm",
+                url ? "absolute left-2 top-2" : "w-fit",
+              )}
             >
-              <ExternalLink className="size-3" /> abrir vídeo (ou status do processamento)
-            </a>
-          </>
+              <Loader2 className="size-3 animate-spin" /> Processando… atualiza em instantes
+            </span>
+          </div>
+        )}
+        {!isMp4 && !processing && url && (
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 font-mono text-[11px] text-primary hover:underline break-all"
+          >
+            <ExternalLink className="size-3 shrink-0" /> {url}
+          </a>
         )}
         {text && <p className="text-sm whitespace-pre-wrap text-muted-foreground">{text}</p>}
       </div>

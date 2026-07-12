@@ -139,6 +139,8 @@ export interface CreationAsset {
   title?: string | null;
   content_text?: string | null;
   media_url?: string | null;
+  /** Preenchido = vídeo pode ainda estar processando (media_url é keyframe até virar .mp4). */
+  job_set_id?: string | null;
   status: PendingStatus;
   decided_by?: string | null;
   decision_note?: string | null;
