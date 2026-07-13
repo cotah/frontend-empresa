@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Sparkles } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { AsyncPanel } from "@/components/async-panel";
@@ -25,6 +26,7 @@ interface BuscaList {
 }
 
 export default function IdeiasPage() {
+  const t = useTranslations("ideias");
   const ideas = useApi<ProductIdea[]>("/api/ideas");
   const busca = useApi<BuscaList>("/api/busca/opportunities");
   const brands = useApi<BrandContext[]>("/api/brands");
@@ -43,7 +45,7 @@ export default function IdeiasPage() {
       setVerdict(await postJson("/api/ceo/idea", { idea: ideaText.trim() }));
       ideas.reload();
     } catch (e) {
-      setDlgError(e instanceof Error ? e.message : "Erro");
+      setDlgError(e instanceof Error ? e.message : t("genericError"));
     } finally {
       setBusy(false);
     }
@@ -52,27 +54,27 @@ export default function IdeiasPage() {
   return (
     <div>
       <SectionHeader
-        kicker="banco de ideias"
-        title="Estoque de Ideias"
-        description="De onde saem os lançamentos: ideias internas, garimpo da Busca e marcas ativas."
+        kicker={t("kicker")}
+        title={t("title")}
+        description={t("description")}
         right={
           <Dialog>
             <DialogTrigger render={<Button className="font-heading" />}>
-              <Sparkles className="size-4 mr-1" /> Avaliar nova ideia
+              <Sparkles className="size-4 mr-1" /> {t("evaluateNewIdea")}
             </DialogTrigger>
             <DialogContent className="max-w-xl">
               <DialogHeader>
-                <DialogTitle className="font-heading">Modo Ideia — HELIOS avalia (go/no-go)</DialogTitle>
+                <DialogTitle className="font-heading">{t("dialogTitle")}</DialogTitle>
               </DialogHeader>
               <Textarea
                 value={ideaText}
                 onChange={(e) => setIdeaText(e.target.value)}
-                placeholder="Descreva a ideia/produto…"
+                placeholder={t("ideaPlaceholder")}
                 className="min-h-28"
                 disabled={busy}
               />
               <Button onClick={evaluate} disabled={busy || !ideaText.trim()} className="font-heading">
-                {busy ? "HELIOS avaliando… (pode levar ~1min)" : "Mandar pro CEO"}
+                {busy ? t("evaluating") : t("sendToCeo")}
               </Button>
               {dlgError && <p className="text-xs text-danger">{dlgError}</p>}
               {verdict != null && (
@@ -87,12 +89,12 @@ export default function IdeiasPage() {
 
       {/* Ideias internas */}
       <section className="reveal">
-        <h2 className="font-heading text-lg font-semibold mb-3">Ideias internas</h2>
+        <h2 className="font-heading text-lg font-semibold mb-3">{t("internalIdeasTitle")}</h2>
         <AsyncPanel
           loading={ideas.loading}
           error={ideas.error}
           empty={(ideas.data?.length ?? 0) === 0}
-          emptyMessage="Nenhuma ideia registrada ainda."
+          emptyMessage={t("internalIdeasEmpty")}
           onRetry={ideas.reload}
         >
           <div className="divide-y divide-border rounded-md border border-border bg-card">
@@ -112,12 +114,12 @@ export default function IdeiasPage() {
 
       {/* Oportunidades da Busca */}
       <section className="reveal mt-8" style={{ animationDelay: "120ms" }}>
-        <h2 className="font-heading text-lg font-semibold mb-3">Oportunidades garimpadas (Busca)</h2>
+        <h2 className="font-heading text-lg font-semibold mb-3">{t("buscaTitle")}</h2>
         <AsyncPanel
           loading={busca.loading}
           error={busca.error}
           empty={(busca.data?.opportunities?.length ?? 0) === 0}
-          emptyMessage="Nenhuma oportunidade no garimpo ainda."
+          emptyMessage={t("buscaEmpty")}
           onRetry={busca.reload}
         >
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -142,12 +144,12 @@ export default function IdeiasPage() {
 
       {/* Marcas ativas */}
       <section className="reveal mt-8" style={{ animationDelay: "200ms" }}>
-        <h2 className="font-heading text-lg font-semibold mb-3">Produtos / marcas ativos</h2>
+        <h2 className="font-heading text-lg font-semibold mb-3">{t("brandsTitle")}</h2>
         <AsyncPanel
           loading={brands.loading}
           error={brands.error}
           empty={(brands.data?.length ?? 0) === 0}
-          emptyMessage="Nenhuma marca criada ainda."
+          emptyMessage={t("brandsEmpty")}
           onRetry={brands.reload}
         >
           <div className="flex flex-wrap gap-2">
@@ -156,7 +158,7 @@ export default function IdeiasPage() {
                 key={(b.id as string) ?? idx}
                 className="rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 font-heading text-sm text-primary"
               >
-                {(b.product_name as string) ?? (b.product_slug as string) ?? "produto"}
+                {(b.product_name as string) ?? (b.product_slug as string) ?? t("productFallback")}
               </span>
             ))}
           </div>

@@ -1,0 +1,274 @@
+{
+  "common": {
+    "retry": "Reintentar",
+    "empty": "Sin registros 🎉",
+    "fullData": "datos completos",
+    "error": "Error"
+  },
+  "nav": {
+    "home": "Inicio",
+    "reuniao": "Reunión (CEO)",
+    "aprovacoes": "Aprobaciones",
+    "financeiro": "Finanzas",
+    "ideias": "Banco de Ideas",
+    "producao": "Línea de Producción",
+    "revisao": "Revisión de Creación",
+    "agentes": "Agentes",
+    "atividade": "Actividad",
+    "apis": "APIs / Saldos"
+  },
+  "shell": {
+    "brandTag": "command deck",
+    "systems": "sistemas operativos",
+    "cash": "caja",
+    "company": "empresa",
+    "pending": "{count, plural, one {pendiente} other {pendientes}}",
+    "logout": "Salir"
+  },
+  "status": {
+    "pending": "pendiente",
+    "approved": "aprobado",
+    "rejected": "rechazado",
+    "done": "ok",
+    "error": "error",
+    "skipped": "omitido",
+    "running": "en curso",
+    "awaiting_gate": "en el portón",
+    "aborted": "abortado"
+  },
+  "revisao": {
+    "kicker": "creación",
+    "title": "Revisión de Creación",
+    "description": "Mira cada pieza generada por la línea y apruébala/recházala una a una — solo lo aprobado sale al aire en Publicación.",
+    "types": {
+      "copy": "copy",
+      "image": "imagen",
+      "video": "video",
+      "landing": "landing",
+      "email": "e-mail",
+      "social_post": "post social",
+      "ads": "anuncios",
+      "seo": "seo"
+    },
+    "filters": {
+      "pending": "pendientes",
+      "approved": "aprobadas",
+      "rejected": "rechazadas",
+      "all": "todas"
+    },
+    "fallbackRunTitle": "Lanzamiento",
+    "preparing": "preparando piezas…",
+    "approvedOf": "{approved} aprobadas de {total}",
+    "processing": "Procesando… se actualiza en instantes",
+    "emailPreviewTitle": "vista previa del e-mail",
+    "emptyAll": "Ninguna pieza todavía — ejecuta la fase Creación en la Línea de Producción primero.",
+    "emptyPending": "Ninguna pieza pendiente — todo revisado por aquí.",
+    "emptyTab": "Ninguna pieza en esta pestaña.",
+    "note": "nota: {note}",
+    "notePlaceholder": "Nota de la decisión (opcional)…",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "prepareError": "Error al preparar piezas",
+    "decideError": "Error al decidir la pieza",
+    "runs": "lanzamientos",
+    "runsEmpty": "Ningún lanzamiento todavía — inicia uno en la Línea de Producción."
+  },
+  "auth": {
+    "restricted": "command deck // acceso restringido",
+    "passwordPlaceholder": "Contraseña de acceso",
+    "checking": "Verificando…",
+    "submit": "Entrar al cockpit",
+    "loginFailed": "Fallo en el login",
+    "footer": "sesión de dueño único · cookie httponly · 30 días"
+  },
+  "dashboard": {
+    "kicker": "visión general",
+    "title": "Home",
+    "description": "El estado de la empresa ahora.",
+    "quickMeeting": "Reunión rápida con HELIOS",
+    "grossCash": "caja bruta",
+    "transactions": "{count, plural, one {# transacción} other {# transacciones}}",
+    "loading": "cargando…",
+    "companyShare": "share de la empresa",
+    "proLabore": "retribución del socio {value}",
+    "pendings": "pendientes",
+    "pendingBreakdown": "{ideas, plural, one {# idea} other {# ideas}} · {spending, plural, one {# gasto} other {# gastos}}",
+    "reviewNow": "revisar ahora",
+    "unclassified": "sin clasificar",
+    "toClassify": "{value} por clasificar",
+    "allClassified": "todo clasificado",
+    "recentActivity": "Actividad reciente",
+    "seeAll": "ver todo →",
+    "emptyActivity": "Ninguna actividad registrada todavía."
+  },
+  "reuniao": {
+    "kicker": "sala de reuniones",
+    "title": "Reunión con HELIOS",
+    "description": "El CEO entra sabiendo la caja real, el trabajo reciente y las lecciones aprendidas.",
+    "productPlaceholder": "Producto (opcional)",
+    "startMeeting": "Empieza la reunión:",
+    "suggestions": {
+      "cash": "¿Cómo estamos de caja?",
+      "challengeIdea": "Desafíame con una idea",
+      "weekPriorities": "¿Qué priorizar esta semana?"
+    },
+    "heliosLabel": "helios · ceo",
+    "thinking": "HELIOS está pensando… (5–15s)",
+    "genericError": "Error",
+    "inputPlaceholder": "Habla con el CEO… (Enter envía, Shift+Enter salto de línea)",
+    "send": "Enviar"
+  },
+  "aprovacoes": {
+    "kicker": "control humano",
+    "title": "Aprobaciones",
+    "description": "Ideas y gastos esperando tu palabra final.",
+    "tabIdeas": "Ideas",
+    "tabSpending": "Gastos",
+    "emptyIdeas": "Ninguna idea pendiente 🎉",
+    "emptySpending": "Ningún gasto pendiente 🎉",
+    "researchScoreLabel": "research / score",
+    "spendingHint": "gastos ≤ €50 en EUR ATLAS ya decide solo — aquí solo llegan los grandes o en moneda extranjera.",
+    "atlasNoteLabel": "dictamen de atlas",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "decideError": "Error al decidir"
+  },
+  "financeiro": {
+    "kicker": "cfo · atlas",
+    "title": "Finanzas",
+    "description": "Los números reales de la empresa, directo del libro mayor.",
+    "weeklyReport": "Informe semanal",
+    "generatingWeekly": "Generando…",
+    "grossRevenue": "ingresos brutos",
+    "companyShare": "parte de la empresa",
+    "proLabore": "sueldo del dueño",
+    "unclassified": "sin clasificar",
+    "revenueByCurrency": "ingresos por moneda",
+    "askAtlas": "preguntar a atlas",
+    "askPlaceholder": "Ej.: \"¿Cuánto entró este mes por producto?\"",
+    "weeklyReportTitle": "informe semanal de atlas",
+    "genericError": "Error",
+    "requestError": "Error {status}"
+  },
+  "apis": {
+    "kicker": "créditos",
+    "title": "APIs / Saldos",
+    "description": "Control manual de los créditos de cada proveedor usado por los agentes.",
+    "manualNoteTitle": "Anotación manual.",
+    "manualNoteBody": "Estos proveedores no exponen saldo vía API, así que los valores aquí se llenan a mano y quedan guardados solo en este navegador. Usa el link de cada card para verificar el valor real en el dashboard oficial.",
+    "dashboardLink": "dashboard",
+    "balanceLabel": "saldo / créditos",
+    "balancePlaceholder": "ej.: US$ 42,00 o 1.500 créditos",
+    "lastRechargeLabel": "última recarga"
+  },
+  "ideias": {
+    "kicker": "banco de ideas",
+    "title": "Inventario de Ideas",
+    "description": "De donde salen los lanzamientos: ideas internas, minería de la Busca y marcas activas.",
+    "evaluateNewIdea": "Evaluar nueva idea",
+    "dialogTitle": "Modo Idea — HELIOS evalúa (go/no-go)",
+    "ideaPlaceholder": "Describe la idea/el producto…",
+    "evaluating": "HELIOS evaluando… (puede tardar ~1min)",
+    "sendToCeo": "Mandar al CEO",
+    "genericError": "Error",
+    "internalIdeasTitle": "Ideas internas",
+    "internalIdeasEmpty": "Ninguna idea registrada todavía.",
+    "buscaTitle": "Oportunidades extraídas (Busca)",
+    "buscaEmpty": "Ninguna oportunidad extraída todavía.",
+    "brandsTitle": "Productos / marcas activos",
+    "brandsEmpty": "Ninguna marca creada todavía.",
+    "productFallback": "producto"
+  },
+  "agentes": {
+    "kicker": "roster",
+    "title": "Agentes",
+    "description": "Todos los empleados de la empresa — y el mostrador para despachar tareas.",
+    "emptyRegistry": "Registry vacío.",
+    "categories": {
+      "outros": "otros"
+    },
+    "dispatchTask": "despachar tarea",
+    "tabDirect": "Directo",
+    "tabSmart": "Inteligente",
+    "selectAgentHint": "← selecciona un agente en el roster",
+    "inputsLabel": "inputs: {inputs}",
+    "productPlaceholder": "Producto (slug)",
+    "instructionPlaceholder": "Instrucción para el agente…",
+    "dispatching": "Despachando…",
+    "dispatch": "Despachar",
+    "freeTextPlaceholder": "Pedido en texto libre — HELIOS elige el agente. Ej.: \"escribe 3 posts para SmartTap\"",
+    "routing": "Enrutando…",
+    "routeToHelios": "Mandar a HELIOS para enrutar",
+    "genericError": "Error"
+  },
+  "atividade": {
+    "kicker": "telemetría",
+    "title": "Actividad",
+    "description": "Qué han estado haciendo los agentes — y qué aprendieron en el camino.",
+    "tabWorklog": "Registro de trabajo",
+    "tabLearnings": "Lecciones aprendidas",
+    "filterPlaceholder": "Filtrar por agente o producto…",
+    "emptyFiltered": "Nada coincide con ese filtro.",
+    "emptyWorklog": "Ninguna actividad registrada todavía.",
+    "columns": {
+      "agent": "agente",
+      "product": "producto",
+      "phase": "fase",
+      "action": "acción",
+      "status": "estado",
+      "when": "cuándo"
+    },
+    "emptyLearnings": "Ninguna lección registrada todavía.",
+    "kinds": {
+      "reflection": "reflexión",
+      "feedback": "feedback",
+      "result": "resultado",
+      "example": "ejemplo"
+    }
+  },
+  "producao": {
+    "kicker": "pipeline",
+    "title": "Línea de Producción",
+    "description": "Dispara el lanzamiento de un producto y sigue las fases del pipeline en tiempo real.",
+    "phases": {
+      "produto": "Producto",
+      "marca": "Marca",
+      "estrategia": "Estrategia",
+      "criacao": "Creación",
+      "publicacao": "Publicación"
+    },
+    "gates": {
+      "label": "Puerta {num}",
+      "notePlaceholder": "Nota de la decisión (opcional)…",
+      "approve": "Aprobar",
+      "reject": "Rechazar"
+    },
+    "start": {
+      "label": "iniciar lanzamiento",
+      "placeholder": "Nombre del producto…",
+      "button": "Iniciar",
+      "buttonBusy": "Iniciando…"
+    },
+    "run": {
+      "trackingLabel": "lanzamiento en seguimiento",
+      "currentPhase": "fase actual: {phase}",
+      "currentGate": "puerta: {gate}",
+      "criacaoRunning": "<hl>Fase en ejecución…</hl> la <b>Creación</b> ejecuta 8 agentes (FORGE→VANTA→PRISM→PULSAR→LUMEN→VITALIS→SEQUOIA→NOVA) y tarda <b>~10–12 minutos</b>. Puedes dejar la pantalla abierta — el estado se actualiza solo.",
+      "lastSummary": "último resumen",
+      "review": "Revisar piezas de la Creación",
+      "advance": "Avanzar — ejecutar la siguiente fase",
+      "advanceBusy": "Ejecutando la siguiente fase…"
+    },
+    "recent": {
+      "label": "lanzamientos recientes",
+      "empty": "Ningún lanzamiento todavía — inicia el primero ahí arriba 🚀"
+    },
+    "errors": {
+      "noRunId": "El pipeline no devolvió run_id",
+      "start": "Error al iniciar",
+      "advance": "Error al avanzar",
+      "advanceTimeoutHint": "{message} — si la fase siguió ejecutándose, el estado de arriba se actualiza solo.",
+      "gate": "Error al decidir la puerta"
+    }
+  }
+}

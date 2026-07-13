@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { LocaleSwitcher } from "@/components/shell/locale-switcher";
 import { useApi } from "@/lib/hooks";
-import { fmtMoney } from "@/lib/format";
+import { activeIntlTag, fmtMoney } from "@/lib/format";
 import type { ApprovalsCount, CfoSummary } from "@/lib/types";
 
 function Clock() {
@@ -17,12 +19,13 @@ function Clock() {
   }, []);
   return (
     <span className="font-mono text-xs text-muted-foreground tabular-nums" suppressHydrationWarning>
-      {now ? now.toLocaleTimeString("pt-BR") : "--:--:--"}
+      {now ? now.toLocaleTimeString(activeIntlTag()) : "--:--:--"}
     </span>
   );
 }
 
 export function Topbar() {
+  const t = useTranslations("shell");
   // Caixa real sempre visível (poll 60s) + badge de pendências (45s)
   const { data: cfo } = useApi<CfoSummary>("/api/cfo/reports", 60_000);
   const { data: counts } = useApi<ApprovalsCount>("/api/approvals/count", 45_000);
@@ -36,13 +39,13 @@ export function Topbar() {
     <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-border bg-background/85 backdrop-blur-md px-4 lg:px-6 h-14">
       {/* Caixa real */}
       <div className="flex items-center gap-2 min-w-0">
-        <span className="label-mono hidden sm:inline">caixa</span>
+        <span className="label-mono hidden sm:inline">{t("cash")}</span>
         <span className="font-heading text-base font-semibold text-success tabular-nums truncate">
           {cfo ? fmtMoney(cfo.total_gross, "EUR") : "—"}
         </span>
         {cfo && (
           <span className="hidden lg:inline font-mono text-[11px] text-muted-foreground">
-            empresa {fmtMoney(cfo.total_company_share, "EUR")}
+            {t("company")} {fmtMoney(cfo.total_company_share, "EUR")}
           </span>
         )}
       </div>
@@ -57,13 +60,14 @@ export function Topbar() {
         >
           <span className="dot-pulse bg-primary" />
           <span className="font-mono font-semibold">{counts!.total}</span>
-          <span className="hidden sm:inline">pendência{counts!.total > 1 ? "s" : ""}</span>
+          <span className="hidden sm:inline">{t("pending", { count: counts!.total })}</span>
         </Link>
       )}
 
       <Clock />
+      <LocaleSwitcher />
 
-      <Button variant="ghost" size="sm" onClick={logout} title="Sair">
+      <Button variant="ghost" size="sm" onClick={logout} title={t("logout")}>
         <LogOut className="size-4" />
       </Button>
     </header>

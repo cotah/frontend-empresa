@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { FileText, SendHorizonal } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { SectionHeader } from "@/components/section-header";
@@ -14,6 +15,7 @@ import { fmtMoney } from "@/lib/format";
 import type { CfoSummary } from "@/lib/types";
 
 export default function FinanceiroPage() {
+  const t = useTranslations("financeiro");
   const cfo = useApi<CfoSummary>("/api/cfo/reports", 60_000);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<unknown>(null);
@@ -37,7 +39,7 @@ export default function FinanceiroPage() {
     try {
       setAnswer(await postJson("/api/cfo/ask", { question: question.trim() }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro");
+      setError(err instanceof Error ? err.message : t("genericError"));
     } finally {
       setAsking(false);
     }
@@ -49,10 +51,10 @@ export default function FinanceiroPage() {
     try {
       const res = await fetch("/api/cfo/weekly");
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? `Erro ${res.status}`);
+      if (!res.ok) throw new Error(json.error ?? t("requestError", { status: res.status }));
       setWeekly(json);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro");
+      setError(err instanceof Error ? err.message : t("genericError"));
     } finally {
       setWeeklyBusy(false);
     }
@@ -61,24 +63,24 @@ export default function FinanceiroPage() {
   return (
     <div>
       <SectionHeader
-        kicker="cfo · atlas"
-        title="Financeiro"
-        description="Os números reais da empresa, direto do livro-razão."
+        kicker={t("kicker")}
+        title={t("title")}
+        description={t("description")}
         right={
           <Button variant="outline" onClick={loadWeekly} disabled={weeklyBusy} className="font-heading">
             <FileText className="size-4 mr-1" />
-            {weeklyBusy ? "Gerando…" : "Relatório semanal"}
+            {weeklyBusy ? t("generatingWeekly") : t("weeklyReport")}
           </Button>
         }
       />
 
       <AsyncPanel loading={cfo.loading} error={cfo.error} onRetry={cfo.reload}>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="receita bruta" value={fmtMoney(cfo.data?.total_gross, "EUR")} tone="success" framed />
-          <StatCard label="share empresa" value={fmtMoney(cfo.data?.total_company_share, "EUR")} />
-          <StatCard label="pró-labore" value={fmtMoney(cfo.data?.total_pro_labore_share, "EUR")} />
+          <StatCard label={t("grossRevenue")} value={fmtMoney(cfo.data?.total_gross, "EUR")} tone="success" framed />
+          <StatCard label={t("companyShare")} value={fmtMoney(cfo.data?.total_company_share, "EUR")} />
+          <StatCard label={t("proLabore")} value={fmtMoney(cfo.data?.total_pro_labore_share, "EUR")} />
           <StatCard
-            label="sem classificação"
+            label={t("unclassified")}
             value={cfo.data?.pending_classification?.count ?? 0}
             hint={cfo.data?.pending_classification?.products?.join(", ") || "—"}
             tone={(cfo.data?.pending_classification?.count ?? 0) > 0 ? "warning" : "default"}
@@ -87,7 +89,7 @@ export default function FinanceiroPage() {
 
         {chartData.length > 0 && (
           <div className="reveal mt-6 rounded-md border border-border bg-card p-4">
-            <div className="label-mono mb-3">receita por moeda</div>
+            <div className="label-mono mb-3">{t("revenueByCurrency")}</div>
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
@@ -107,12 +109,12 @@ export default function FinanceiroPage() {
 
       {/* Perguntar ao ATLAS */}
       <div className="reveal mt-8 rounded-md border border-border bg-card p-5" style={{ animationDelay: "150ms" }}>
-        <div className="label-mono mb-3">perguntar ao atlas</div>
+        <div className="label-mono mb-3">{t("askAtlas")}</div>
         <form onSubmit={ask} className="flex gap-2">
           <Input
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder='Ex.: "Quanto entrou esse mês por produto?"'
+            placeholder={t("askPlaceholder")}
             disabled={asking}
           />
           <Button type="submit" disabled={asking || !question.trim()}>
@@ -129,7 +131,7 @@ export default function FinanceiroPage() {
 
       {weekly != null && (
         <div className="reveal mt-6 corner-frame rounded-md border border-border bg-card p-5">
-          <div className="label-mono mb-3">relatório semanal do atlas</div>
+          <div className="label-mono mb-3">{t("weeklyReportTitle")}</div>
           <SmartOutput data={weekly} />
         </div>
       )}

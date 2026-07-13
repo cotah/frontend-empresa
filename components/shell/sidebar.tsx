@@ -14,25 +14,29 @@ import {
   Stamp,
   Wallet,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useApi } from "@/lib/hooks";
 import type { ApprovalsCount } from "@/lib/types";
 
+// Labels vêm do namespace "nav" em messages/<locale>.json
 const NAV = [
-  { href: "/", label: "Home", icon: LayoutDashboard },
-  { href: "/reuniao", label: "Reunião (CEO)", icon: MessagesSquare },
-  { href: "/aprovacoes", label: "Aprovações", icon: Stamp },
-  { href: "/financeiro", label: "Financeiro", icon: Wallet },
-  { href: "/ideias", label: "Estoque de Ideias", icon: Lightbulb },
-  { href: "/producao", label: "Linha de Produção", icon: Factory },
-  { href: "/revisao", label: "Revisão de Criação", icon: Images },
-  { href: "/agentes", label: "Agentes", icon: Bot },
-  { href: "/atividade", label: "Atividade", icon: Activity },
-  { href: "/apis", label: "APIs / Saldos", icon: Gauge },
-];
+  { href: "/", key: "home", icon: LayoutDashboard },
+  { href: "/reuniao", key: "reuniao", icon: MessagesSquare },
+  { href: "/aprovacoes", key: "aprovacoes", icon: Stamp },
+  { href: "/financeiro", key: "financeiro", icon: Wallet },
+  { href: "/ideias", key: "ideias", icon: Lightbulb },
+  { href: "/producao", key: "producao", icon: Factory },
+  { href: "/revisao", key: "revisao", icon: Images },
+  { href: "/agentes", key: "agentes", icon: Bot },
+  { href: "/atividade", key: "atividade", icon: Activity },
+  { href: "/apis", key: "apis", icon: Gauge },
+] as const;
 
 export function Sidebar() {
   const pathname = usePathname();
+  const t = useTranslations("nav");
+  const tShell = useTranslations("shell");
   // Badge de pendências — polling leve (45s)
   const { data: counts } = useApi<ApprovalsCount>("/api/approvals/count", 45_000);
 
@@ -43,12 +47,12 @@ export function Sidebar() {
         <div className="font-heading text-lg font-bold tracking-wide text-foreground">
           CAPIVA<span className="text-primary">REX</span>
         </div>
-        <div className="label-mono mt-1">command deck</div>
+        <div className="label-mono mt-1">{tShell("brandTag")}</div>
       </div>
 
       {/* Navegação */}
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
-        {NAV.map(({ href, label, icon: Icon }) => {
+        {NAV.map(({ href, key, icon: Icon }) => {
           const active = pathname === href;
           const isApprovals = href === "/aprovacoes";
           return (
@@ -63,7 +67,7 @@ export function Sidebar() {
               )}
             >
               <Icon className="size-4 shrink-0" strokeWidth={active ? 2.2 : 1.8} />
-              <span className="flex-1 truncate">{label}</span>
+              <span className="flex-1 truncate">{t(key)}</span>
               {isApprovals && (counts?.total ?? 0) > 0 && (
                 <span className="font-mono text-[10px] font-semibold rounded-sm bg-primary/15 text-primary px-1.5 py-0.5">
                   {counts!.total}
@@ -77,7 +81,7 @@ export function Sidebar() {
       <div className="px-5 py-4 border-t border-sidebar-border">
         <div className="label-mono flex items-center gap-2">
           <span className="dot-pulse bg-success" />
-          sistemas operacionais
+          {tShell("systems")}
         </div>
       </div>
     </aside>

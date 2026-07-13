@@ -1,6 +1,7 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import { useTranslations } from "next-intl";
 
 /**
  * Renderiza a resposta de um agente sem conhecer o shape exato:
@@ -18,6 +19,7 @@ export function Markdown({ children }: { children: string }) {
 }
 
 export function SmartOutput({ data }: { data: unknown }) {
+  const t = useTranslations("common");
   if (data === null || data === undefined) return null;
 
   if (typeof data === "string") return <Markdown>{data}</Markdown>;
@@ -33,7 +35,7 @@ export function SmartOutput({ data }: { data: unknown }) {
           {Object.keys(rest).length > 0 && (
             <details className="group">
               <summary className="label-mono cursor-pointer select-none hover:text-foreground">
-                dados completos
+                {t("fullData")}
               </summary>
               <pre className="mt-2 overflow-x-auto rounded-md border border-border bg-muted/50 p-3 font-mono text-xs text-muted-foreground">
                 {JSON.stringify(rest, null, 2)}

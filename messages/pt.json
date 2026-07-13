@@ -1,0 +1,274 @@
+{
+  "common": {
+    "retry": "Tentar de novo",
+    "empty": "Nenhum registro 🎉",
+    "fullData": "dados completos",
+    "error": "Erro"
+  },
+  "nav": {
+    "home": "Home",
+    "reuniao": "Reunião (CEO)",
+    "aprovacoes": "Aprovações",
+    "financeiro": "Financeiro",
+    "ideias": "Estoque de Ideias",
+    "producao": "Linha de Produção",
+    "revisao": "Revisão de Criação",
+    "agentes": "Agentes",
+    "atividade": "Atividade",
+    "apis": "APIs / Saldos"
+  },
+  "shell": {
+    "brandTag": "command deck",
+    "systems": "sistemas operacionais",
+    "cash": "caixa",
+    "company": "empresa",
+    "pending": "{count, plural, one {pendência} other {pendências}}",
+    "logout": "Sair"
+  },
+  "status": {
+    "pending": "pendente",
+    "approved": "aprovado",
+    "rejected": "rejeitado",
+    "done": "ok",
+    "error": "erro",
+    "skipped": "pulado",
+    "running": "rodando",
+    "awaiting_gate": "no portão",
+    "aborted": "abortado"
+  },
+  "auth": {
+    "restricted": "command deck // acesso restrito",
+    "passwordPlaceholder": "Senha de acesso",
+    "checking": "Verificando…",
+    "submit": "Entrar no cockpit",
+    "loginFailed": "Falha no login",
+    "footer": "sessão de dono único · cookie httponly · 30 dias"
+  },
+  "revisao": {
+    "kicker": "criação",
+    "title": "Revisão de Criação",
+    "description": "Vê cada peça gerada pela esteira e aprova/rejeita uma a uma — só o que for aprovado vai pro ar na Publicação.",
+    "types": {
+      "copy": "copy",
+      "image": "imagem",
+      "video": "vídeo",
+      "landing": "landing",
+      "email": "e-mail",
+      "social_post": "post social",
+      "ads": "anúncios",
+      "seo": "seo"
+    },
+    "filters": {
+      "pending": "pendentes",
+      "approved": "aprovadas",
+      "rejected": "rejeitadas",
+      "all": "todas"
+    },
+    "fallbackRunTitle": "Lançamento",
+    "preparing": "preparando peças…",
+    "approvedOf": "{approved} aprovadas de {total}",
+    "processing": "Processando… atualiza em instantes",
+    "emailPreviewTitle": "preview do e-mail",
+    "emptyAll": "Nenhuma peça ainda — roda a fase Criação na Linha de Produção primeiro.",
+    "emptyPending": "Nenhuma peça pendente — tudo revisado por aqui.",
+    "emptyTab": "Nenhuma peça nesta aba.",
+    "note": "nota: {note}",
+    "notePlaceholder": "Nota da decisão (opcional)…",
+    "approve": "Aprovar",
+    "reject": "Rejeitar",
+    "prepareError": "Erro ao preparar peças",
+    "decideError": "Erro ao decidir peça",
+    "runs": "lançamentos",
+    "runsEmpty": "Nenhum lançamento ainda — inicia um na Linha de Produção."
+  },
+  "dashboard": {
+    "kicker": "visão geral",
+    "title": "Home",
+    "description": "O estado da empresa agora.",
+    "quickMeeting": "Reunião rápida com HELIOS",
+    "grossCash": "caixa bruto",
+    "transactions": "{count, plural, one {# transação} other {# transações}}",
+    "loading": "carregando…",
+    "companyShare": "share da empresa",
+    "proLabore": "pró-labore {value}",
+    "pendings": "pendências",
+    "pendingBreakdown": "{ideas, plural, one {# ideia} other {# ideias}} · {spending, plural, one {# gasto} other {# gastos}}",
+    "reviewNow": "revisar agora",
+    "unclassified": "sem classificação",
+    "toClassify": "{value} a classificar",
+    "allClassified": "tudo classificado",
+    "recentActivity": "Atividade recente",
+    "seeAll": "ver tudo →",
+    "emptyActivity": "Nenhuma atividade registrada ainda."
+  },
+  "reuniao": {
+    "kicker": "sala de reunião",
+    "title": "Reunião com HELIOS",
+    "description": "O CEO entra sabendo o caixa real, o trabalho recente e as lições aprendidas.",
+    "productPlaceholder": "Produto (opcional)",
+    "startMeeting": "Comece a reunião:",
+    "suggestions": {
+      "cash": "Como estamos de caixa?",
+      "challengeIdea": "Me desafia numa ideia",
+      "weekPriorities": "O que priorizar essa semana?"
+    },
+    "heliosLabel": "helios · ceo",
+    "thinking": "HELIOS está pensando… (5–15s)",
+    "genericError": "Erro",
+    "inputPlaceholder": "Fale com o CEO… (Enter envia, Shift+Enter quebra linha)",
+    "send": "Enviar"
+  },
+  "aprovacoes": {
+    "kicker": "controle humano",
+    "title": "Aprovações",
+    "description": "Ideias e gastos aguardando a sua palavra final.",
+    "tabIdeas": "Ideias",
+    "tabSpending": "Gastos",
+    "emptyIdeas": "Nenhuma ideia pendente 🎉",
+    "emptySpending": "Nenhum gasto pendente 🎉",
+    "researchScoreLabel": "research / score",
+    "spendingHint": "gastos ≤ €50 em EUR o ATLAS já decide sozinho — aqui só chegam os grandes ou em moeda estrangeira.",
+    "atlasNoteLabel": "parecer do atlas",
+    "approve": "Aprovar",
+    "reject": "Rejeitar",
+    "decideError": "Erro ao decidir"
+  },
+  "financeiro": {
+    "kicker": "cfo · atlas",
+    "title": "Financeiro",
+    "description": "Os números reais da empresa, direto do livro-razão.",
+    "weeklyReport": "Relatório semanal",
+    "generatingWeekly": "Gerando…",
+    "grossRevenue": "receita bruta",
+    "companyShare": "share empresa",
+    "proLabore": "pró-labore",
+    "unclassified": "sem classificação",
+    "revenueByCurrency": "receita por moeda",
+    "askAtlas": "perguntar ao atlas",
+    "askPlaceholder": "Ex.: \"Quanto entrou esse mês por produto?\"",
+    "weeklyReportTitle": "relatório semanal do atlas",
+    "genericError": "Erro",
+    "requestError": "Erro {status}"
+  },
+  "apis": {
+    "kicker": "créditos",
+    "title": "APIs / Saldos",
+    "description": "Controle manual dos créditos de cada provedor usado pelos agentes.",
+    "manualNoteTitle": "Anotação manual.",
+    "manualNoteBody": "Esses provedores não expõem saldo via API, então os valores aqui são preenchidos à mão e ficam salvos só neste navegador. Use o link de cada card pra conferir o valor real no dashboard oficial.",
+    "dashboardLink": "dashboard",
+    "balanceLabel": "saldo / créditos",
+    "balancePlaceholder": "ex.: US$ 42,00 ou 1.500 créditos",
+    "lastRechargeLabel": "última recarga"
+  },
+  "ideias": {
+    "kicker": "banco de ideias",
+    "title": "Estoque de Ideias",
+    "description": "De onde saem os lançamentos: ideias internas, garimpo da Busca e marcas ativas.",
+    "evaluateNewIdea": "Avaliar nova ideia",
+    "dialogTitle": "Modo Ideia — HELIOS avalia (go/no-go)",
+    "ideaPlaceholder": "Descreva a ideia/produto…",
+    "evaluating": "HELIOS avaliando… (pode levar ~1min)",
+    "sendToCeo": "Mandar pro CEO",
+    "genericError": "Erro",
+    "internalIdeasTitle": "Ideias internas",
+    "internalIdeasEmpty": "Nenhuma ideia registrada ainda.",
+    "buscaTitle": "Oportunidades garimpadas (Busca)",
+    "buscaEmpty": "Nenhuma oportunidade no garimpo ainda.",
+    "brandsTitle": "Produtos / marcas ativos",
+    "brandsEmpty": "Nenhuma marca criada ainda.",
+    "productFallback": "produto"
+  },
+  "agentes": {
+    "kicker": "roster",
+    "title": "Agentes",
+    "description": "Todos os funcionários da empresa — e o balcão pra despachar tarefas.",
+    "emptyRegistry": "Registry vazio.",
+    "categories": {
+      "outros": "outros"
+    },
+    "dispatchTask": "despachar tarefa",
+    "tabDirect": "Direto",
+    "tabSmart": "Inteligente",
+    "selectAgentHint": "← selecione um agente no roster",
+    "inputsLabel": "inputs: {inputs}",
+    "productPlaceholder": "Produto (slug)",
+    "instructionPlaceholder": "Instrução pro agente…",
+    "dispatching": "Despachando…",
+    "dispatch": "Despachar",
+    "freeTextPlaceholder": "Pedido em texto livre — o HELIOS escolhe o agente. Ex.: \"escreve 3 posts pro SmartTap\"",
+    "routing": "Roteando…",
+    "routeToHelios": "Mandar pro HELIOS rotear",
+    "genericError": "Erro"
+  },
+  "atividade": {
+    "kicker": "telemetria",
+    "title": "Atividade",
+    "description": "O que os agentes andaram fazendo — e o que aprenderam no caminho.",
+    "tabWorklog": "Registro de trabalho",
+    "tabLearnings": "Lições aprendidas",
+    "filterPlaceholder": "Filtrar por agente ou produto…",
+    "emptyFiltered": "Nada bate com esse filtro.",
+    "emptyWorklog": "Nenhuma atividade registrada ainda.",
+    "columns": {
+      "agent": "agente",
+      "product": "produto",
+      "phase": "fase",
+      "action": "ação",
+      "status": "status",
+      "when": "quando"
+    },
+    "emptyLearnings": "Nenhuma lição registrada ainda.",
+    "kinds": {
+      "reflection": "reflexão",
+      "feedback": "feedback",
+      "result": "resultado",
+      "example": "exemplo"
+    }
+  },
+  "producao": {
+    "kicker": "esteira",
+    "title": "Linha de Produção",
+    "description": "Dispara o lançamento de um produto e acompanha as fases da esteira em tempo real.",
+    "phases": {
+      "produto": "Produto",
+      "marca": "Marca",
+      "estrategia": "Estratégia",
+      "criacao": "Criação",
+      "publicacao": "Publicação"
+    },
+    "gates": {
+      "label": "Portão {num}",
+      "notePlaceholder": "Nota da decisão (opcional)…",
+      "approve": "Aprovar",
+      "reject": "Rejeitar"
+    },
+    "start": {
+      "label": "iniciar lançamento",
+      "placeholder": "Nome do produto…",
+      "button": "Iniciar",
+      "buttonBusy": "Iniciando…"
+    },
+    "run": {
+      "trackingLabel": "lançamento em acompanhamento",
+      "currentPhase": "fase atual: {phase}",
+      "currentGate": "portão: {gate}",
+      "criacaoRunning": "<hl>Fase rodando…</hl> a <b>Criação</b> executa 8 agentes (FORGE→VANTA→PRISM→PULSAR→LUMEN→VITALIS→SEQUOIA→NOVA) e leva <b>~10–12 minutos</b>. Pode deixar a tela aberta — o status atualiza sozinho.",
+      "lastSummary": "último resumo",
+      "review": "Revisar peças da Criação",
+      "advance": "Avançar — rodar próxima fase",
+      "advanceBusy": "Rodando próxima fase…"
+    },
+    "recent": {
+      "label": "lançamentos recentes",
+      "empty": "Nenhum lançamento ainda — inicia o primeiro aí em cima 🚀"
+    },
+    "errors": {
+      "noRunId": "Esteira não devolveu run_id",
+      "start": "Erro ao iniciar",
+      "advance": "Erro ao avançar",
+      "advanceTimeoutHint": "{message} — se a fase seguiu rodando, o status acima atualiza sozinho.",
+      "gate": "Erro ao decidir portão"
+    }
+  }
+}

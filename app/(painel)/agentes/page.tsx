@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { SendHorizonal } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { AsyncPanel } from "@/components/async-panel";
@@ -14,6 +15,7 @@ import { cn } from "@/lib/utils";
 import type { AgentInfo } from "@/lib/types";
 
 export default function AgentesPage() {
+  const t = useTranslations("agentes");
   const agents = useApi<AgentInfo[]>("/api/agents");
   const [selected, setSelected] = useState<AgentInfo | null>(null);
   const [product, setProduct] = useState("");
@@ -39,7 +41,7 @@ export default function AgentesPage() {
     try {
       setResult(await postJson("/api/dispatch", body));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erro");
+      setError(e instanceof Error ? e.message : t("genericError"));
     } finally {
       setBusy(false);
     }
@@ -48,9 +50,9 @@ export default function AgentesPage() {
   return (
     <div>
       <SectionHeader
-        kicker="roster"
-        title="Agentes"
-        description="Todos os funcionários da empresa — e o balcão pra despachar tarefas."
+        kicker={t("kicker")}
+        title={t("title")}
+        description={t("description")}
       />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
@@ -60,12 +62,15 @@ export default function AgentesPage() {
             loading={agents.loading}
             error={agents.error}
             empty={(agents.data?.length ?? 0) === 0}
-            emptyMessage="Registry vazio."
+            emptyMessage={t("emptyRegistry")}
             onRetry={agents.reload}
           >
             {grouped.map(([category, list]) => (
               <div key={category}>
-                <div className="label-mono mb-2">{category}</div>
+                {/* Categorias vêm da API; só as conhecidas (ex.: fallback "outros") têm tradução. */}
+                <div className="label-mono mb-2">
+                  {t.has(`categories.${category}`) ? t(`categories.${category}`) : category}
+                </div>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {list.map((a) => (
                     <button
@@ -100,11 +105,11 @@ export default function AgentesPage() {
         {/* Balcão de despacho */}
         <div className="reveal lg:sticky lg:top-20 h-fit" style={{ animationDelay: "120ms" }}>
           <div className="corner-frame rounded-md border border-border bg-card p-5">
-            <div className="label-mono mb-3">despachar tarefa</div>
+            <div className="label-mono mb-3">{t("dispatchTask")}</div>
             <Tabs defaultValue="direto">
               <TabsList className="w-full">
-                <TabsTrigger value="direto" className="flex-1 font-heading">Direto</TabsTrigger>
-                <TabsTrigger value="inteligente" className="flex-1 font-heading">Inteligente</TabsTrigger>
+                <TabsTrigger value="direto" className="flex-1 font-heading">{t("tabDirect")}</TabsTrigger>
+                <TabsTrigger value="inteligente" className="flex-1 font-heading">{t("tabSmart")}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="direto" className="mt-3 space-y-3">
@@ -114,24 +119,24 @@ export default function AgentesPage() {
                       <span className="font-heading font-semibold text-primary">{selected.name}</span>
                       {selected.primary_inputs && (
                         <p className="mt-1 font-mono text-[10px] text-muted-foreground">
-                          inputs: {selected.primary_inputs}
+                          {t("inputsLabel", { inputs: selected.primary_inputs })}
                         </p>
                       )}
                     </>
                   ) : (
-                    <span className="text-muted-foreground">← selecione um agente no roster</span>
+                    <span className="text-muted-foreground">{t("selectAgentHint")}</span>
                   )}
                 </div>
                 <Input
                   value={product}
                   onChange={(e) => setProduct(e.target.value)}
-                  placeholder="Produto (slug)"
+                  placeholder={t("productPlaceholder")}
                   className="font-mono text-xs"
                 />
                 <Textarea
                   value={instruction}
                   onChange={(e) => setInstruction(e.target.value)}
-                  placeholder="Instrução pro agente…"
+                  placeholder={t("instructionPlaceholder")}
                   className="min-h-24"
                 />
                 <Button
@@ -146,7 +151,7 @@ export default function AgentesPage() {
                   }
                 >
                   <SendHorizonal className="size-4 mr-1" />
-                  {busy ? "Despachando…" : "Despachar"}
+                  {busy ? t("dispatching") : t("dispatch")}
                 </Button>
               </TabsContent>
 
@@ -154,7 +159,7 @@ export default function AgentesPage() {
                 <Textarea
                   value={freeText}
                   onChange={(e) => setFreeText(e.target.value)}
-                  placeholder='Pedido em texto livre — o HELIOS escolhe o agente. Ex.: "escreve 3 posts pro SmartTap"'
+                  placeholder={t("freeTextPlaceholder")}
                   className="min-h-32"
                 />
                 <Button
@@ -163,7 +168,7 @@ export default function AgentesPage() {
                   onClick={() => dispatch({ message: freeText.trim() })}
                 >
                   <SendHorizonal className="size-4 mr-1" />
-                  {busy ? "Roteando…" : "Mandar pro HELIOS rotear"}
+                  {busy ? t("routing") : t("routeToHelios")}
                 </Button>
               </TabsContent>
             </Tabs>

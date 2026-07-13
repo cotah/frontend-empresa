@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Search } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { AsyncPanel } from "@/components/async-panel";
@@ -20,14 +21,8 @@ const KIND_STYLES: Record<AgentLearning["kind"], string> = {
   example: "bg-muted text-muted-foreground border-border",
 };
 
-const KIND_LABELS: Record<AgentLearning["kind"], string> = {
-  reflection: "reflexão",
-  feedback: "feedback",
-  result: "resultado",
-  example: "exemplo",
-};
-
 export default function AtividadePage() {
+  const t = useTranslations("atividade");
   const worklog = useApi<WorkLogEntry[]>("/api/worklog?limit=100", 60_000);
   const learnings = useApi<AgentLearning[]>("/api/learnings");
   const [filter, setFilter] = useState("");
@@ -47,18 +42,18 @@ export default function AtividadePage() {
   return (
     <div>
       <SectionHeader
-        kicker="telemetria"
-        title="Atividade"
-        description="O que os agentes andaram fazendo — e o que aprenderam no caminho."
+        kicker={t("kicker")}
+        title={t("title")}
+        description={t("description")}
       />
 
       <Tabs defaultValue="worklog" className="reveal">
         <TabsList>
           <TabsTrigger value="worklog" className="font-heading">
-            Registro de trabalho
+            {t("tabWorklog")}
           </TabsTrigger>
           <TabsTrigger value="learnings" className="font-heading">
-            Lições aprendidas
+            {t("tabLearnings")}
           </TabsTrigger>
         </TabsList>
 
@@ -69,7 +64,7 @@ export default function AtividadePage() {
             <Input
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              placeholder="Filtrar por agente ou produto…"
+              placeholder={t("filterPlaceholder")}
               className="pl-8 font-mono text-xs"
             />
           </div>
@@ -78,21 +73,19 @@ export default function AtividadePage() {
             loading={worklog.loading}
             error={worklog.error}
             empty={filtered.length === 0}
-            emptyMessage={
-              filter ? "Nada bate com esse filtro." : "Nenhuma atividade registrada ainda."
-            }
+            emptyMessage={filter ? t("emptyFiltered") : t("emptyWorklog")}
             onRetry={worklog.reload}
           >
             <div className="overflow-x-auto rounded-md border border-border bg-card">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border text-left">
-                    <th className="label-mono px-3 py-2 font-normal">agente</th>
-                    <th className="label-mono px-3 py-2 font-normal">produto</th>
-                    <th className="label-mono px-3 py-2 font-normal">fase</th>
-                    <th className="label-mono px-3 py-2 font-normal">ação</th>
-                    <th className="label-mono px-3 py-2 font-normal">status</th>
-                    <th className="label-mono px-3 py-2 font-normal">quando</th>
+                    <th className="label-mono px-3 py-2 font-normal">{t("columns.agent")}</th>
+                    <th className="label-mono px-3 py-2 font-normal">{t("columns.product")}</th>
+                    <th className="label-mono px-3 py-2 font-normal">{t("columns.phase")}</th>
+                    <th className="label-mono px-3 py-2 font-normal">{t("columns.action")}</th>
+                    <th className="label-mono px-3 py-2 font-normal">{t("columns.status")}</th>
+                    <th className="label-mono px-3 py-2 font-normal">{t("columns.when")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -133,7 +126,7 @@ export default function AtividadePage() {
             loading={learnings.loading}
             error={learnings.error}
             empty={(learnings.data?.length ?? 0) === 0}
-            emptyMessage="Nenhuma lição registrada ainda."
+            emptyMessage={t("emptyLearnings")}
             onRetry={learnings.reload}
           >
             <div className="grid gap-3 md:grid-cols-2">
@@ -150,7 +143,7 @@ export default function AtividadePage() {
                         KIND_STYLES[l.kind] ?? "bg-muted text-muted-foreground border-border",
                       )}
                     >
-                      {KIND_LABELS[l.kind] ?? l.kind}
+                      {t.has(`kinds.${l.kind}`) ? t(`kinds.${l.kind}`) : l.kind}
                     </span>
                   </div>
                   <p className="text-sm leading-relaxed">{l.lesson}</p>

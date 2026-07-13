@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { RefreshCw, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,7 +11,7 @@ export function AsyncPanel({
   loading,
   error,
   empty,
-  emptyMessage = "Nenhum registro 🎉",
+  emptyMessage,
   onRetry,
   children,
 }: {
@@ -21,6 +22,7 @@ export function AsyncPanel({
   onRetry?: () => void;
   children: ReactNode;
 }) {
+  const t = useTranslations("common");
   if (loading) {
     return (
       <div className="space-y-2">
@@ -37,7 +39,7 @@ export function AsyncPanel({
         <span className="flex-1">{error}</span>
         {onRetry && (
           <Button variant="outline" size="sm" onClick={onRetry}>
-            <RefreshCw className="size-3.5 mr-1" /> Tentar de novo
+            <RefreshCw className="size-3.5 mr-1" /> {t("retry")}
           </Button>
         )}
       </div>
@@ -46,7 +48,7 @@ export function AsyncPanel({
   if (empty) {
     return (
       <div className="rounded-md border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-        {emptyMessage}
+        {emptyMessage ?? t("empty")}
       </div>
     );
   }

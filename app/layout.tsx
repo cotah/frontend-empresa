@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono, Oxanium } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
+import { INTL_TAGS, type Locale } from "@/i18n/config";
 import "./globals.css";
 
 const plexSans = IBM_Plex_Sans({
@@ -25,17 +28,25 @@ export const metadata: Metadata = {
   description: "Cockpit da empresa AI: CEO, aprovações, caixa, produção e agentes.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Locale vem do cookie (i18n/request.ts); default pt. URLs não mudam.
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
     <html
-      lang="pt-BR"
+      lang={INTL_TAGS[locale as Locale] ?? "pt-BR"}
       className={`dark ${plexSans.variable} ${plexMono.variable} ${oxanium.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </body>
     </html>
   );
 }

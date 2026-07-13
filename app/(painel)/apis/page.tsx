@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ExternalLink, Info } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ interface ProviderNote {
 type Notes = Record<string, ProviderNote>;
 
 export default function ApisPage() {
+  const t = useTranslations("apis");
   const [notes, setNotes] = useState<Notes>({});
   const [loaded, setLoaded] = useState(false);
 
@@ -59,18 +61,17 @@ export default function ApisPage() {
   return (
     <div>
       <SectionHeader
-        kicker="créditos"
-        title="APIs / Saldos"
-        description="Controle manual dos créditos de cada provedor usado pelos agentes."
+        kicker={t("kicker")}
+        title={t("title")}
+        description={t("description")}
       />
 
       {/* Nota de honestidade */}
       <div className="reveal mb-6 flex items-start gap-3 rounded-md border border-primary/40 bg-primary/10 p-4 text-sm">
         <Info className="size-4 shrink-0 mt-0.5 text-primary" />
         <p className="text-muted-foreground">
-          <span className="font-semibold text-primary">Anotação manual.</span> Esses provedores
-          não expõem saldo via API, então os valores aqui são preenchidos à mão e ficam salvos
-          só neste navegador. Use o link de cada card pra conferir o valor real no dashboard oficial.
+          <span className="font-semibold text-primary">{t("manualNoteTitle")}</span>{" "}
+          {t("manualNoteBody")}
         </p>
       </div>
 
@@ -87,23 +88,23 @@ export default function ApisPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-primary"
                 >
-                  dashboard <ExternalLink className="size-3" />
+                  {t("dashboardLink")} <ExternalLink className="size-3" />
                 </a>
               </div>
 
               <div className="space-y-2">
                 <div>
-                  <div className="label-mono mb-1">saldo / créditos</div>
+                  <div className="label-mono mb-1">{t("balanceLabel")}</div>
                   <Input
                     value={note?.balance ?? ""}
                     onChange={(e) => update(p.key, "balance", e.target.value)}
-                    placeholder="ex.: US$ 42,00 ou 1.500 créditos"
+                    placeholder={t("balancePlaceholder")}
                     disabled={!loaded}
                     className="font-mono text-xs"
                   />
                 </div>
                 <div>
-                  <div className="label-mono mb-1">última recarga</div>
+                  <div className="label-mono mb-1">{t("lastRechargeLabel")}</div>
                   <Input
                     type="date"
                     value={note?.rechargedAt ?? ""}

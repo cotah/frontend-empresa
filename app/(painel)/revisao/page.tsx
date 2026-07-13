@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Check, ExternalLink, Loader2, X } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { AsyncPanel } from "@/components/async-panel";
@@ -13,34 +14,19 @@ import { useApi, postJson } from "@/lib/hooks";
 import { fmtDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type {
-  AssetType,
   CreationAsset,
   Decision,
   OrchestrationRun,
   PendingStatus,
 } from "@/lib/types";
 
-const TYPE_LABELS: Record<AssetType, string> = {
-  copy: "copy",
-  image: "imagem",
-  video: "vídeo",
-  landing: "landing",
-  email: "e-mail",
-  social_post: "post social",
-  ads: "anúncios",
-  seo: "seo",
-};
-
 // "pendentes" primeiro e como default — é a fila de trabalho; decididas saem dela na hora.
-const FILTERS: Array<{ key: "all" | PendingStatus; label: string }> = [
-  { key: "pending", label: "pendentes" },
-  { key: "approved", label: "aprovadas" },
-  { key: "rejected", label: "rejeitadas" },
-  { key: "all", label: "todas" },
-];
+// Labels vêm de t(`filters.${key}`) no render.
+const FILTERS: Array<"all" | PendingStatus> = ["pending", "approved", "rejected", "all"];
 
 /** Preview de uma peça conforme o asset_type (URLs prontas — só exibe). */
 function AssetPreview({ asset }: { asset: CreationAsset }) {
+  const t = useTranslations("revisao");
   const { asset_type: type, media_url: url, content_text: text, title } = asset;
 
   if (type === "image" || type === "social_post") {
@@ -94,7 +80,7 @@ function AssetPreview({ asset }: { asset: CreationAsset }) {
                 url ? "absolute left-2 top-2" : "w-fit",
               )}
             >
-              <Loader2 className="size-3 animate-spin" /> Processando… atualiza em instantes
+              <Loader2 className="size-3 animate-spin" /> {t("processing")}
             </span>
           </div>
         )}
@@ -118,7 +104,7 @@ function AssetPreview({ asset }: { asset: CreationAsset }) {
       <iframe
         sandbox=""
         srcDoc={text ?? ""}
-        title={title ?? "preview do e-mail"}
+        title={title ?? t("emailPreviewTitle")}
         className="h-72 w-full rounded-md border border-border bg-white"
       />
     );
@@ -147,6 +133,7 @@ function AssetPreview({ asset }: { asset: CreationAsset }) {
 }
 
 function RevisaoContent() {
+  const t = useTranslations("revisao");
   const searchParams = useSearchParams();
   const [activeRunId, setActiveRunId] = useState<string | null>(searchParams.get("run_id"));
   const [filter, setFilter] = useState<"all" | PendingStatus>("pending");
@@ -177,7 +164,7 @@ function RevisaoContent() {
     setPreparing(true);
     postJson("/api/review/preparar", { run_id: activeRunId })
       // Erro no preparar não bloqueia: as peças podem já existir no banco.
-      .catch((e) => setError(e instanceof Error ? e.message : "Erro ao preparar peças"))
+      .catch((e) => setError(e instanceof Error ? e.message : t("prepareError")))
       .finally(() => {
         setPreparing(false);
         reloadAssets();
@@ -203,7 +190,7 @@ function RevisaoContent() {
       );
       reloadAssets();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erro ao decidir peça");
+      setError(e instanceof Error ? e.message : t("decideError"));
     } finally {
       setBusyId(null);
     }
@@ -221,9 +208,9 @@ function RevisaoContent() {
   return (
     <div>
       <SectionHeader
-        kicker="criação"
-        title="Revisão de Criação"
-        description="Vê cada peça gerada pela esteira e aprova/rejeita uma a uma — só o que for aprovado vai pro ar na Publicação."
+        kicker={t("kicker")}
+        title={t("title")}
+        description={t("description")}
       />
       {error && <p className="mb-4 text-sm text-danger">{error}</p>}
 
@@ -233,19 +220,19 @@ function RevisaoContent() {
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <h3 className="font-heading text-lg font-semibold">
-                {activeRun?.product_name ?? "Lançamento"}
+                {activeRun?.product_name ?? t("fallbackRunTitle")}
               </h3>
               {preparing && (
                 <span className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
-                  <Loader2 className="size-3 animate-spin text-primary" /> preparando peças…
+                  <Loader2 className="size-3 animate-spin text-primary" /> {t("preparing")}
                 </span>
               )}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <span className="label-mono mr-1">
-                {approved} aprovadas de {list.length}
+                {t("approvedOf", { approved, total: list.length })}
               </span>
-              {FILTERS.map(({ key, label }) => (
+              {FILTERS.map((key) => (
                 <button
                   key={key}
                   onClick={() => setFilter(key)}
@@ -256,7 +243,7 @@ function RevisaoContent() {
                       : "border-border text-muted-foreground hover:bg-muted/40",
                   )}
                 >
-                  {label} {countFor(key)}
+                  {t(`filters.${key}`)} {countFor(key)}
                 </button>
               ))}
             </div>
@@ -267,15 +254,13 @@ function RevisaoContent() {
             loading={assets.loading}
             error={assets.error}
             empty={list.length === 0}
-            emptyMessage="Nenhuma peça ainda — roda a fase Criação na Linha de Produção primeiro."
+            emptyMessage={t("emptyAll")}
             onRetry={reloadAssets}
           >
             {/* Aba sem peças (ex.: tudo revisado em "pendentes") — evita grid vazio mudo. */}
             {visible.length === 0 && (
               <p className="rounded-md border border-border bg-card p-4 text-sm text-muted-foreground">
-                {filter === "pending"
-                  ? "Nenhuma peça pendente — tudo revisado por aqui."
-                  : "Nenhuma peça nesta aba."}
+                {filter === "pending" ? t("emptyPending") : t("emptyTab")}
               </p>
             )}
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -291,7 +276,7 @@ function RevisaoContent() {
                           {a.agent}
                         </span>
                         <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                          {TYPE_LABELS[a.asset_type] ?? a.asset_type}
+                          {t.has(`types.${a.asset_type}`) ? t(`types.${a.asset_type}`) : a.asset_type}
                         </span>
                       </div>
                       {a.title && (
@@ -307,7 +292,7 @@ function RevisaoContent() {
 
                   {a.status !== "pending" && a.decision_note && (
                     <p className="mt-3 rounded-md bg-muted/40 p-2 font-mono text-[11px] text-muted-foreground">
-                      nota: {a.decision_note}
+                      {t("note", { note: a.decision_note })}
                     </p>
                   )}
 
@@ -316,7 +301,7 @@ function RevisaoContent() {
                       <Textarea
                         value={notes[a.id] ?? ""}
                         onChange={(e) => setNotes((n) => ({ ...n, [a.id]: e.target.value }))}
-                        placeholder="Nota da decisão (opcional)…"
+                        placeholder={t("notePlaceholder")}
                         className="mt-3 min-h-12 text-sm"
                       />
                       <div className="flex gap-2 pt-3">
@@ -325,7 +310,7 @@ function RevisaoContent() {
                           disabled={busyId === a.id || a.status === "approved"}
                           onClick={() => decide(a, "approved")}
                         >
-                          <Check className="size-4 mr-1" /> Aprovar
+                          <Check className="size-4 mr-1" /> {t("approve")}
                         </Button>
                         <Button
                           variant="outline"
@@ -333,7 +318,7 @@ function RevisaoContent() {
                           disabled={busyId === a.id || a.status === "rejected"}
                           onClick={() => decide(a, "rejected")}
                         >
-                          <X className="size-4 mr-1" /> Rejeitar
+                          <X className="size-4 mr-1" /> {t("reject")}
                         </Button>
                       </div>
                     </>
@@ -351,12 +336,12 @@ function RevisaoContent() {
 
       {/* ── Escolher outro lançamento ───────────────────────── */}
       <div className="reveal" style={{ animationDelay: "120ms" }}>
-        <div className="label-mono mb-3">lançamentos</div>
+        <div className="label-mono mb-3">{t("runs")}</div>
         <AsyncPanel
           loading={runs.loading}
           error={runs.error}
           empty={(runs.data?.length ?? 0) === 0}
-          emptyMessage="Nenhum lançamento ainda — inicia um na Linha de Produção."
+          emptyMessage={t("runsEmpty")}
           onRetry={runs.reload}
         >
           <div className="overflow-hidden rounded-md border border-border">

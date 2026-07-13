@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 const STYLES: Record<string, string> = {
@@ -12,19 +13,9 @@ const STYLES: Record<string, string> = {
   aborted: "bg-muted text-muted-foreground border-border",
 };
 
-const LABELS: Record<string, string> = {
-  pending: "pendente",
-  approved: "aprovado",
-  rejected: "rejeitado",
-  done: "ok",
-  error: "erro",
-  skipped: "pulado",
-  running: "rodando",
-  awaiting_gate: "no portão",
-  aborted: "abortado",
-};
-
 export function StatusBadge({ status }: { status: string }) {
+  // Labels no namespace "status"; status desconhecido cai no valor cru.
+  const t = useTranslations("status");
   const key = status?.toLowerCase() ?? "";
   return (
     <span
@@ -34,7 +25,7 @@ export function StatusBadge({ status }: { status: string }) {
       )}
     >
       {key === "pending" && <span className="dot-pulse bg-warning" />}
-      {LABELS[key] ?? status}
+      {t.has(key) ? t(key) : status}
     </span>
   );
 }

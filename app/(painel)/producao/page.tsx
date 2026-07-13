@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Check, DoorOpen, Images, Loader2, Rocket, StepForward, X } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { AsyncPanel } from "@/components/async-panel";
@@ -18,37 +19,22 @@ import type { Decision, GateApproval, OrchestrationRun } from "@/lib/types";
 /**
  * Passos da esteira (Bloco de Junção): fases intercaladas com portões.
  * `aliases` cobre variações do valor de `phase` vindo do banco (matching
- * tolerante — minúsculo, sem acento).
+ * tolerante — minúsculo, sem acento). Labels vêm de t(`phases.${key}`) /
+ * t("gates.label", { num }) no render (regras de hooks).
  */
 const STEPS: Array<
-  | { kind: "phase"; key: string; label: string; aliases: string[]; slow?: boolean }
-  | { kind: "gate"; num: number; label: string }
+  | { kind: "phase"; key: string; aliases: string[]; slow?: boolean }
+  | { kind: "gate"; num: number }
 > = [
-  { kind: "phase", key: "produto", label: "Produto", aliases: ["produto", "product", "venus"] },
-  { kind: "gate", num: 2, label: "Portão 2" },
-  { kind: "phase", key: "marca", label: "Marca", aliases: ["marca", "brand"] },
-  { kind: "gate", num: 3, label: "Portão 3" },
-  {
-    kind: "phase",
-    key: "estrategia",
-    label: "Estratégia",
-    aliases: ["estrategia", "strategy", "orion"],
-  },
-  { kind: "gate", num: 4, label: "Portão 4" },
-  {
-    kind: "phase",
-    key: "criacao",
-    label: "Criação",
-    aliases: ["criacao", "creation", "forge"],
-    slow: true,
-  },
-  {
-    kind: "phase",
-    key: "publicacao",
-    label: "Publicação",
-    aliases: ["publicacao", "publish", "publication", "provision"],
-  },
-  { kind: "gate", num: 5, label: "Portão 5" },
+  { kind: "phase", key: "produto", aliases: ["produto", "product", "venus"] },
+  { kind: "gate", num: 2 },
+  { kind: "phase", key: "marca", aliases: ["marca", "brand"] },
+  { kind: "gate", num: 3 },
+  { kind: "phase", key: "estrategia", aliases: ["estrategia", "strategy", "orion"] },
+  { kind: "gate", num: 4 },
+  { kind: "phase", key: "criacao", aliases: ["criacao", "creation", "forge"], slow: true },
+  { kind: "phase", key: "publicacao", aliases: ["publicacao", "publish", "publication", "provision"] },
+  { kind: "gate", num: 5 },
 ];
 
 /** minúsculo + sem acento, pra casar phase/gate do banco com os passos. */
@@ -74,6 +60,7 @@ function currentStepIndex(run: OrchestrationRun | null): number {
 }
 
 export default function ProducaoPage() {
+  const t = useTranslations("producao");
   const [productName, setProductName] = useState("");
   const [activeRunId, setActiveRunId] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
@@ -110,6 +97,14 @@ export default function ProducaoPage() {
   const criacaoIdx = STEPS.findIndex((s) => s.kind === "phase" && s.key === "criacao");
   const canReview = !!run.data && (run.data.status === "done" || current >= criacaoIdx);
 
+  /** Label traduzido pra fase crua da API (fallback: valor cru do banco). */
+  function phaseLabel(phase: string): string {
+    const p = norm(phase);
+    const step = STEPS.find((s) => s.kind === "phase" && s.aliases.some((a) => p.includes(a)));
+    if (step?.kind === "phase") return t(`phases.${step.key}`);
+    return t.has(`phases.${p}`) ? t(`phases.${p}`) : phase;
+  }
+
   async function start() {
     setStarting(true);
     setError(null);
@@ -118,12 +113,12 @@ export default function ProducaoPage() {
         product_name: productName.trim(),
       });
       const id = resp.run_id ?? resp.id;
-      if (!id) throw new Error("Esteira não devolveu run_id");
+      if (!id) throw new Error(t("errors.noRunId"));
       setActiveRunId(id);
       setProductName("");
       runs.reload();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erro ao iniciar");
+      setError(e instanceof Error ? e.message : t("errors.start"));
     } finally {
       setStarting(false);
     }
@@ -140,8 +135,8 @@ export default function ProducaoPage() {
       // rodando e o polling do run mostra o progresso.
       setError(
         e instanceof Error
-          ? `${e.message} — se a fase seguiu rodando, o status acima atualiza sozinho.`
-          : "Erro ao avançar",
+          ? t("errors.advanceTimeoutHint", { message: e.message })
+          : t("errors.advance"),
       );
     } finally {
       setAdvancing(false);
@@ -164,7 +159,7 @@ export default function ProducaoPage() {
       gates.reload();
       run.reload();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erro ao decidir portão");
+      setError(e instanceof Error ? e.message : t("errors.gate"));
     } finally {
       setBusyGateId(null);
     }
@@ -173,15 +168,15 @@ export default function ProducaoPage() {
   return (
     <div>
       <SectionHeader
-        kicker="esteira"
-        title="Linha de Produção"
-        description="Dispara o lançamento de um produto e acompanha as fases da esteira em tempo real."
+        kicker={t("kicker")}
+        title={t("title")}
+        description={t("description")}
       />
       {error && <p className="mb-4 text-sm text-danger">{error}</p>}
 
       {/* ── Iniciar lançamento ──────────────────────────────── */}
       <div className="reveal corner-frame mb-8 max-w-xl rounded-md border border-border bg-card p-5">
-        <div className="label-mono mb-3">iniciar lançamento</div>
+        <div className="label-mono mb-3">{t("start.label")}</div>
         <div className="flex gap-2">
           <Input
             value={productName}
@@ -189,7 +184,7 @@ export default function ProducaoPage() {
             onKeyDown={(e) => {
               if (e.key === "Enter" && productName.trim() && !starting) start();
             }}
-            placeholder="Nome do produto…"
+            placeholder={t("start.placeholder")}
             className="flex-1"
           />
           <Button
@@ -198,7 +193,7 @@ export default function ProducaoPage() {
             onClick={start}
           >
             <Rocket className="size-4 mr-1" />
-            {starting ? "Iniciando…" : "Iniciar"}
+            {starting ? t("start.buttonBusy") : t("start.button")}
           </Button>
         </div>
       </div>
@@ -206,7 +201,7 @@ export default function ProducaoPage() {
       {/* ── Run atual ───────────────────────────────────────── */}
       {activeRunId && (
         <div className="reveal mb-8" style={{ animationDelay: "80ms" }}>
-          <div className="label-mono mb-3">lançamento em acompanhamento</div>
+          <div className="label-mono mb-3">{t("run.trackingLabel")}</div>
           <AsyncPanel loading={run.loading} error={run.error} onRetry={run.reload}>
             {run.data && (
               <div className="corner-frame rounded-md border border-border bg-card p-5">
@@ -224,9 +219,13 @@ export default function ProducaoPage() {
                 <ol className="mt-5 grid gap-2 sm:grid-cols-3 lg:grid-cols-9">
                   {STEPS.map((step, i) => {
                     const state = i < current ? "done" : i === current ? "current" : "next";
+                    const label =
+                      step.kind === "gate"
+                        ? t("gates.label", { num: step.num })
+                        : t(`phases.${step.key}`);
                     return (
                       <li
-                        key={step.label}
+                        key={step.kind === "gate" ? `gate-${step.num}` : step.key}
                         className={cn(
                           "rounded-md border p-2.5 text-center",
                           step.kind === "gate" ? "border-warning/40 bg-warning/5" : "bg-card",
@@ -255,7 +254,7 @@ export default function ProducaoPage() {
                             state === "current" && "text-primary",
                           )}
                         >
-                          {step.label}
+                          {label}
                         </div>
                       </li>
                     );
@@ -265,8 +264,8 @@ export default function ProducaoPage() {
                 {/* Fase atual crua (fallback quando não casa com o stepper) */}
                 {run.data.phase && current === -1 && (
                   <p className="mt-3 font-mono text-[11px] text-muted-foreground">
-                    fase atual: {run.data.phase}
-                    {run.data.gate ? ` · portão: ${run.data.gate}` : ""}
+                    {t("run.currentPhase", { phase: run.data.phase })}
+                    {run.data.gate ? ` · ${t("run.currentGate", { gate: run.data.gate })}` : ""}
                   </p>
                 )}
 
@@ -275,18 +274,19 @@ export default function ProducaoPage() {
                   <div className="mt-4 flex items-center gap-3 rounded-md border border-primary/40 bg-primary/10 p-4 text-sm">
                     <Loader2 className="size-4 shrink-0 animate-spin text-primary" />
                     <p className="text-muted-foreground">
-                      <span className="font-semibold text-primary">Fase rodando…</span> a{" "}
-                      <span className="font-semibold">Criação</span> executa 8 agentes
-                      (FORGE→VANTA→PRISM→PULSAR→LUMEN→VITALIS→SEQUOIA→NOVA) e leva{" "}
-                      <span className="font-semibold">~10–12 minutos</span>. Pode deixar a tela
-                      aberta — o status atualiza sozinho.
+                      {t.rich("run.criacaoRunning", {
+                        hl: (chunks) => (
+                          <span className="font-semibold text-primary">{chunks}</span>
+                        ),
+                        b: (chunks) => <span className="font-semibold">{chunks}</span>,
+                      })}
                     </p>
                   </div>
                 )}
 
                 {run.data.last_summary && (
                   <div className="mt-4 rounded-md bg-muted/40 p-3">
-                    <div className="label-mono mb-1">último resumo</div>
+                    <div className="label-mono mb-1">{t("run.lastSummary")}</div>
                     <SmartOutput data={run.data.last_summary} />
                   </div>
                 )}
@@ -298,7 +298,7 @@ export default function ProducaoPage() {
                     className="mt-4 w-full font-heading"
                     render={<Link href={`/revisao?run_id=${activeRunId}`} />}
                   >
-                    <Images className="size-4 mr-1" /> Revisar peças da Criação
+                    <Images className="size-4 mr-1" /> {t("run.review")}
                   </Button>
                 )}
 
@@ -311,7 +311,7 @@ export default function ProducaoPage() {
                     onClick={advance}
                   >
                     <StepForward className="size-4 mr-1" />
-                    {advancing ? "Rodando próxima fase…" : "Avançar — rodar próxima fase"}
+                    {advancing ? t("run.advanceBusy") : t("run.advance")}
                   </Button>
                 )}
               </div>
@@ -333,7 +333,7 @@ export default function ProducaoPage() {
                         {gate.gate}
                         {gate.phase ? (
                           <span className="ml-2 font-mono text-xs text-muted-foreground">
-                            {gate.phase}
+                            {phaseLabel(gate.phase)}
                           </span>
                         ) : null}
                       </h3>
@@ -350,7 +350,7 @@ export default function ProducaoPage() {
                   <Textarea
                     value={notes[gate.id] ?? ""}
                     onChange={(e) => setNotes((n) => ({ ...n, [gate.id]: e.target.value }))}
-                    placeholder="Nota da decisão (opcional)…"
+                    placeholder={t("gates.notePlaceholder")}
                     className="mt-3 min-h-16 text-sm"
                   />
                   <div className="flex gap-2 pt-3">
@@ -360,7 +360,7 @@ export default function ProducaoPage() {
                       disabled={busyGateId === gate.id}
                       onClick={() => decideGate(gate, "approved")}
                     >
-                      <Check className="size-4 mr-1" /> Aprovar
+                      <Check className="size-4 mr-1" /> {t("gates.approve")}
                     </Button>
                     <Button
                       size="lg"
@@ -369,7 +369,7 @@ export default function ProducaoPage() {
                       disabled={busyGateId === gate.id}
                       onClick={() => decideGate(gate, "rejected")}
                     >
-                      <X className="size-4 mr-1" /> Rejeitar
+                      <X className="size-4 mr-1" /> {t("gates.reject")}
                     </Button>
                   </div>
                 </div>
@@ -381,12 +381,12 @@ export default function ProducaoPage() {
 
       {/* ── Lançamentos recentes ────────────────────────────── */}
       <div className="reveal" style={{ animationDelay: "160ms" }}>
-        <div className="label-mono mb-3">lançamentos recentes</div>
+        <div className="label-mono mb-3">{t("recent.label")}</div>
         <AsyncPanel
           loading={runs.loading}
           error={runs.error}
           empty={(runs.data?.length ?? 0) === 0}
-          emptyMessage="Nenhum lançamento ainda — inicia o primeiro aí em cima 🚀"
+          emptyMessage={t("recent.empty")}
           onRetry={runs.reload}
         >
           <div className="overflow-hidden rounded-md border border-border">
@@ -402,7 +402,9 @@ export default function ProducaoPage() {
                 <span className="font-heading font-semibold">{r.product_name}</span>
                 <span className="flex items-center gap-3">
                   {r.phase && (
-                    <span className="font-mono text-[11px] text-muted-foreground">{r.phase}</span>
+                    <span className="font-mono text-[11px] text-muted-foreground">
+                      {phaseLabel(r.phase)}
+                    </span>
                   )}
                   <StatusBadge status={r.status} />
                   <span className="font-mono text-[11px] text-muted-foreground">

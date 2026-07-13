@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function LoginPage() {
+  const t = useTranslations("auth");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -20,10 +22,10 @@ export default function LoginPage() {
         body: JSON.stringify({ password }),
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error ?? "Falha no login");
+      if (!res.ok) throw new Error(json.error ?? t("loginFailed"));
       window.location.href = "/";
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro");
+      setError(err instanceof Error ? err.message : t("loginFailed"));
       setBusy(false);
     }
   }
@@ -34,22 +36,22 @@ export default function LoginPage() {
         <div className="font-heading text-2xl font-bold tracking-wide">
           CAPIVA<span className="text-primary">REX</span>
         </div>
-        <div className="label-mono mt-1 mb-8">command deck // acesso restrito</div>
+        <div className="label-mono mt-1 mb-8">{t("restricted")}</div>
         <form onSubmit={submit} className="space-y-4">
           <Input
             type="password"
-            placeholder="Senha de acesso"
+            placeholder={t("passwordPlaceholder")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoFocus
           />
           {error && <p className="text-xs text-danger">{error}</p>}
           <Button type="submit" className="w-full font-heading" disabled={busy || !password}>
-            {busy ? "Verificando…" : "Entrar no cockpit"}
+            {busy ? t("checking") : t("submit")}
           </Button>
         </form>
         <p className="mt-6 font-mono text-[10px] text-muted-foreground">
-          sessão de dono único · cookie httponly · 30 dias
+          {t("footer")}
         </p>
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, X } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { AsyncPanel } from "@/components/async-panel";
@@ -18,6 +19,7 @@ function DecideButtons({
   busy: boolean;
   onDecide: (decision: Decision) => void;
 }) {
+  const t = useTranslations("aprovacoes");
   return (
     <div className="flex gap-2 pt-3">
       <Button
@@ -26,7 +28,7 @@ function DecideButtons({
         disabled={busy}
         onClick={() => onDecide("approved")}
       >
-        <Check className="size-4 mr-1" /> Aprovar
+        <Check className="size-4 mr-1" /> {t("approve")}
       </Button>
       <Button
         size="lg"
@@ -35,13 +37,14 @@ function DecideButtons({
         disabled={busy}
         onClick={() => onDecide("rejected")}
       >
-        <X className="size-4 mr-1" /> Rejeitar
+        <X className="size-4 mr-1" /> {t("reject")}
       </Button>
     </div>
   );
 }
 
 export default function AprovacoesPage() {
+  const t = useTranslations("aprovacoes");
   const ideas = useApi<ProductIdea[]>("/api/ideas?status=pending", 45_000);
   const spending = useApi<SpendingRequest[]>("/api/spending?status=pending", 45_000);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -59,7 +62,7 @@ export default function AprovacoesPage() {
       await postJson(`/api/${kind}/decide`, { request_id: id, decision });
       reload();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erro ao decidir");
+      setError(e instanceof Error ? e.message : t("decideError"));
     } finally {
       setBusyId(null);
     }
@@ -68,19 +71,19 @@ export default function AprovacoesPage() {
   return (
     <div>
       <SectionHeader
-        kicker="controle humano"
-        title="Aprovações"
-        description="Ideias e gastos aguardando a sua palavra final."
+        kicker={t("kicker")}
+        title={t("title")}
+        description={t("description")}
       />
       {error && <p className="mb-4 text-sm text-danger">{error}</p>}
 
       <Tabs defaultValue="ideias" className="reveal">
         <TabsList>
           <TabsTrigger value="ideias" className="font-heading">
-            Ideias {ideas.data?.length ? `(${ideas.data.length})` : ""}
+            {t("tabIdeas")} {ideas.data?.length ? `(${ideas.data.length})` : ""}
           </TabsTrigger>
           <TabsTrigger value="gastos" className="font-heading">
-            Gastos {spending.data?.length ? `(${spending.data.length})` : ""}
+            {t("tabSpending")} {spending.data?.length ? `(${spending.data.length})` : ""}
           </TabsTrigger>
         </TabsList>
 
@@ -89,7 +92,7 @@ export default function AprovacoesPage() {
             loading={ideas.loading}
             error={ideas.error}
             empty={(ideas.data?.length ?? 0) === 0}
-            emptyMessage="Nenhuma ideia pendente 🎉"
+            emptyMessage={t("emptyIdeas")}
             onRetry={ideas.reload}
           >
             <div className="grid gap-4 lg:grid-cols-2">
@@ -104,7 +107,7 @@ export default function AprovacoesPage() {
                   <p className="mt-2 text-sm text-foreground/85">{idea.idea_summary}</p>
                   {idea.research_summary != null && (
                     <div className="mt-3 rounded-md bg-muted/40 p-3">
-                      <div className="label-mono mb-1">research / score</div>
+                      <div className="label-mono mb-1">{t("researchScoreLabel")}</div>
                       <SmartOutput data={idea.research_summary} />
                     </div>
                   )}
@@ -120,13 +123,13 @@ export default function AprovacoesPage() {
 
         <TabsContent value="gastos" className="mt-4">
           <p className="mb-3 font-mono text-[11px] text-muted-foreground">
-            gastos ≤ €50 em EUR o ATLAS já decide sozinho — aqui só chegam os grandes ou em moeda estrangeira.
+            {t("spendingHint")}
           </p>
           <AsyncPanel
             loading={spending.loading}
             error={spending.error}
             empty={(spending.data?.length ?? 0) === 0}
-            emptyMessage="Nenhum gasto pendente 🎉"
+            emptyMessage={t("emptySpending")}
             onRetry={spending.reload}
           >
             <div className="grid gap-4 lg:grid-cols-2">
@@ -149,7 +152,7 @@ export default function AprovacoesPage() {
                   </p>
                   {s.decision_note && (
                     <div className="mt-3 rounded-md border-l-2 border-primary bg-muted/40 p-3 text-xs text-foreground/80">
-                      <div className="label-mono mb-1">parecer do atlas</div>
+                      <div className="label-mono mb-1">{t("atlasNoteLabel")}</div>
                       {s.decision_note}
                     </div>
                   )}
