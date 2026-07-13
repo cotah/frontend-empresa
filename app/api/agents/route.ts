@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
-import { supabaseSelect } from "@/lib/server/upstream";
+import { supabaseAdminSelect } from "@/lib/server/upstream";
+import { requireAccount } from "@/lib/server/supabase";
 import { fail } from "@/lib/server/route-helpers";
 
 /** Roster de agentes (agent_registry). */
 export async function GET() {
   try {
-    const data = await supabaseSelect(
+    // agent_registry é catálogo GLOBAL (sem account_id) — requireAccount só
+    // protege a rota; a leitura é a exceção documentada via supabaseAdminSelect.
+    await requireAccount();
+    const data = await supabaseAdminSelect(
       "agent_registry",
       "select=*&order=category.asc,name.asc&limit=200",
     );

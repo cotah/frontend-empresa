@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { n8nPost } from "@/lib/server/upstream";
+import { requireAccount } from "@/lib/server/supabase";
 import { fail } from "@/lib/server/route-helpers";
 
 /** Decide um pedido de gasto (> €50 ou moeda estrangeira). */
 export async function POST(req: NextRequest) {
   try {
+    const { accountId } = await requireAccount();
     const { request_id, decision, note } = (await req.json()) as {
       request_id?: string;
       decision?: string;
@@ -18,7 +20,7 @@ export async function POST(req: NextRequest) {
     }
     const body: Record<string, unknown> = { request_id, decision };
     if (note?.trim()) body.note = note.trim();
-    const data = await n8nPost("/capivarex-cfo-decidir", body);
+    const data = await n8nPost("/capivarex-cfo-decidir", body, accountId);
     return NextResponse.json(data);
   } catch (e) {
     return fail(e);

@@ -34,6 +34,7 @@ export function Topbar() {
   // Caixa real sempre visível (poll 60s) + badge de pendências (45s)
   const { data: cfo } = useApi<CfoSummary>("/api/cfo/reports", 60_000);
   const { data: counts } = useApi<ApprovalsCount>("/api/approvals/count", 45_000);
+  const { data: me } = useApi<{ email: string; workspace: string }>("/api/auth/me");
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -71,6 +72,14 @@ export function Topbar() {
 
       <Clock />
       <LocaleSwitcher />
+
+      {/* Workspace + e-mail do usuário logado */}
+      {me && (
+        <div className="hidden md:flex flex-col items-end leading-tight">
+          <span className="font-mono text-[11px] text-foreground">{me.workspace}</span>
+          <span className="font-mono text-[10px] text-muted-foreground">{me.email}</span>
+        </div>
+      )}
 
       <Button variant="ghost" size="sm" onClick={logout} title={t("logout")}>
         <LogOut className="size-4" />

@@ -1,27 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SESSION_COOKIE, sessionToken } from "@/lib/auth";
+import { supabaseServer } from "@/lib/server/supabase";
+import { UpstreamError } from "@/lib/server/upstream";
+import { fail } from "@/lib/server/route-helpers";
 
 export async function POST(req: NextRequest) {
-  const { password } = (await req.json().catch(() => ({}))) as { password?: string };
-  const expected = process.env.APP_PASSWORD;
+  try {
+    const { email, password } = (await req.json().catch(() => ({}))) as {
+      email?: string;
+      password?: string;
+    };
+    if (!email || !password) {
+      throw new UpstreamError("E-mail e senha são obrigatórios", 400);
+    }
 
-  if (!expected) {
-    return NextResponse.json(
-      { error: "APP_PASSWORD não configurada no servidor (Vercel env vars)" },
-      { status: 500 },
-    );
+    const supabase = await supabaseServer();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      if (error.code === "email_not_confirmed") {
+        throw new UpstreamError("Confirme seu e-mail antes de entrar (veja sua caixa de entrada)", 401);
+      }
+      throw new UpstreamError("E-mail ou senha incorretos", 401);
+    }
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    return fail(e);
   }
-  if (!password || password !== expected) {
-    return NextResponse.json({ error: "Senha incorreta" }, { status: 401 });
-  }
-
-  const res = NextResponse.json({ ok: true });
-  res.cookies.set(SESSION_COOKIE, await sessionToken(expected), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30, // 30 dias
-  });
-  return res;
 }

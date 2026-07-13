@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cfoFetch } from "@/lib/server/upstream";
+import { requireAccount } from "@/lib/server/supabase";
 import { fail } from "@/lib/server/route-helpers";
 
 /** CFO devolve números como string ("20") — coage pra number (null/lixo => 0). */
@@ -40,13 +41,14 @@ function normalizeSummary(raw: unknown): unknown {
 /** Resumo financeiro real do CFO (?product_slug=&since= opcionais). */
 export async function GET(req: NextRequest) {
   try {
+    const { accountId } = await requireAccount();
     const params = new URLSearchParams();
     const productSlug = req.nextUrl.searchParams.get("product_slug");
     const since = req.nextUrl.searchParams.get("since");
     if (productSlug) params.set("product_slug", productSlug);
     if (since) params.set("since", since);
     const qs = params.toString();
-    const data = await cfoFetch(`/reports/summary${qs ? `?${qs}` : ""}`);
+    const data = await cfoFetch(`/reports/summary${qs ? `?${qs}` : ""}`, accountId);
     return NextResponse.json(normalizeSummary(data));
   } catch (e) {
     return fail(e);

@@ -10,7 +10,7 @@ export class UpstreamError extends Error {
   }
 }
 
-function need(name: string): string {
+export function need(name: string): string {
   const value = process.env[name];
   if (!value) throw new UpstreamError(`Env var ${name} não configurada no servidor`, 500);
   return value;
@@ -29,29 +29,48 @@ async function jsonOrThrow(res: Response, label: string): Promise<unknown> {
   }
 }
 
-/** POST num webhook do n8n (CEO, gates, pontes, dispatch). */
-export async function n8nPost(path: string, body: unknown): Promise<unknown> {
+// ─────────────────────────────────────────────────────────────────────────────
+// REGRA DE OURO DO MULTI-TENANT: a service key ignora o RLS, então o isolamento
+// é responsabilidade DESTA camada. Nenhuma query sai daqui sem o account_id do
+// usuário logado — por isso as funções abaixo EXIGEM accountId na assinatura.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Anexa account_id como query param (respeita ? já existente no path). */
+function withAccountParam(path: string, accountId: string): string {
+  const sep = path.includes("?") ? "&" : "?";
+  return `${path}${sep}account_id=${encodeURIComponent(accountId)}`;
+}
+
+/** POST num webhook do n8n (CEO, gates, pontes, dispatch) — account_id sempre no corpo. */
+export async function n8nPost(
+  path: string,
+  body: Record<string, unknown>,
+  accountId: string,
+): Promise<unknown> {
   const res = await fetch(`${need("N8N_BASE")}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ ...body, account_id: accountId }),
     cache: "no-store",
   });
   return jsonOrThrow(res, `n8n ${path}`);
 }
 
-/** Chamada ao CFO Railway (FastAPI) com X-API-Key. */
+/** Chamada ao CFO Railway (FastAPI) — account_id no corpo (POST) ou na query (GET). */
 export async function cfoFetch(
   path: string,
-  init?: { method?: string; body?: unknown },
+  accountId: string,
+  init?: { method?: string; body?: Record<string, unknown> },
 ): Promise<unknown> {
-  const res = await fetch(`${need("CFO_BASE")}${path}`, {
+  const hasBody = init?.body !== undefined;
+  const url = `${need("CFO_BASE")}${hasBody ? path : withAccountParam(path, accountId)}`;
+  const res = await fetch(url, {
     method: init?.method ?? "GET",
     headers: {
       "Content-Type": "application/json",
       "X-API-Key": need("CFO_API_KEY"),
     },
-    body: init?.body !== undefined ? JSON.stringify(init.body) : undefined,
+    body: hasBody ? JSON.stringify({ ...init.body, account_id: accountId }) : undefined,
     cache: "no-store",
   });
   return jsonOrThrow(res, `CFO ${path}`);
@@ -60,21 +79,29 @@ export async function cfoFetch(
 /** Chamada ao backend Busca Railway com X-API-Key (read ou control). */
 export async function buscaFetch(
   path: string,
+  accountId: string,
   auth: "read" | "control" = "read",
-  init?: { method?: string; body?: unknown },
+  init?: { method?: string; body?: Record<string, unknown> },
 ): Promise<unknown> {
   const key = auth === "read" ? need("READ_API_KEY") : need("CONTROL_API_KEY");
-  const res = await fetch(`${need("BUSCA_BASE")}${path}`, {
+  const hasBody = init?.body !== undefined;
+  const url = `${need("BUSCA_BASE")}${hasBody ? path : withAccountParam(path, accountId)}`;
+  const res = await fetch(url, {
     method: init?.method ?? "GET",
     headers: { "Content-Type": "application/json", "X-API-Key": key },
-    body: init?.body !== undefined ? JSON.stringify(init.body) : undefined,
+    body: hasBody ? JSON.stringify({ ...init.body, account_id: accountId }) : undefined,
     cache: "no-store",
   });
   return jsonOrThrow(res, `Busca ${path}`);
 }
 
-/** Leitura no Supabase REST com service key (RLS exige service_role). */
-export async function supabaseSelect(table: string, query = ""): Promise<unknown> {
+/**
+ * Leitura CRUA no Supabase REST com service key — SEM escopo de conta.
+ * Uso restrito: lookups de infraestrutura (account_members, accounts) e
+ * tabelas globais sem account_id (agent_registry). Dados de cliente usam
+ * supabaseSelect, que exige accountId.
+ */
+export async function supabaseAdminSelect(table: string, query = ""): Promise<unknown> {
   const key = need("SUPABASE_SERVICE_KEY");
   const url = `${need("SUPABASE_URL")}/rest/v1/${table}${query ? `?${query}` : ""}`;
   const res = await fetch(url, {
@@ -82,4 +109,14 @@ export async function supabaseSelect(table: string, query = ""): Promise<unknown
     cache: "no-store",
   });
   return jsonOrThrow(res, `Supabase ${table}`);
+}
+
+/** Leitura no Supabase escopada por conta: toda query sai com account_id=eq.<id>. */
+export async function supabaseSelect(
+  table: string,
+  accountId: string,
+  query = "",
+): Promise<unknown> {
+  const scoped = `account_id=eq.${encodeURIComponent(accountId)}${query ? `&${query}` : ""}`;
+  return supabaseAdminSelect(table, scoped);
 }
