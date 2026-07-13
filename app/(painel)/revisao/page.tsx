@@ -135,7 +135,7 @@ function AssetPreview({ asset }: { asset: CreationAsset }) {
 function RevisaoContent() {
   const t = useTranslations("revisao");
   const searchParams = useSearchParams();
-  const [activeRunId, setActiveRunId] = useState<string | null>(searchParams.get("run_id"));
+  const [selectedRunId, setSelectedRunId] = useState<string | null>(searchParams.get("run_id"));
   const [filter, setFilter] = useState<"all" | PendingStatus>("pending");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -144,18 +144,17 @@ function RevisaoContent() {
   const preparedRef = useRef<Set<string>>(new Set());
 
   const runs = useApi<OrchestrationRun[]>("/api/esteira/runs", 60_000);
+
+  // Sem seleção explícita (nem via ?run_id=): o mais recente ainda em andamento (ou o último).
+  const defaultRun =
+    runs.data?.find((r) => r.status === "running" || r.status === "awaiting_gate") ?? runs.data?.[0];
+  const activeRunId = selectedRunId ?? defaultRun?.id ?? null;
+
   const assets = useApi<CreationAsset[]>(
     activeRunId ? `/api/review/assets?run_id=${activeRunId}` : null,
     15_000,
   );
   const { reload: reloadAssets, setData: setAssets } = assets;
-
-  // Sem run selecionado (nem via ?run_id=): retoma o mais recente.
-  useEffect(() => {
-    if (activeRunId || !runs.data?.length) return;
-    const active = runs.data.find((r) => r.status === "running" || r.status === "awaiting_gate");
-    setActiveRunId((active ?? runs.data[0]).id);
-  }, [activeRunId, runs.data]);
 
   // Ao abrir um run, chama o preparar UMA vez (idempotente — popula as peças).
   useEffect(() => {
@@ -169,7 +168,7 @@ function RevisaoContent() {
         setPreparing(false);
         reloadAssets();
       });
-  }, [activeRunId, reloadAssets]);
+  }, [activeRunId, reloadAssets, t]);
 
   async function decide(asset: CreationAsset, decision: Decision) {
     setBusyId(asset.id);
@@ -349,7 +348,7 @@ function RevisaoContent() {
               <button
                 key={r.id}
                 onClick={() => {
-                  setActiveRunId(r.id);
+                  setSelectedRunId(r.id);
                   setFilter("pending");
                 }}
                 className={cn(

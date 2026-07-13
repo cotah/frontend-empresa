@@ -31,11 +31,13 @@ export function useApi<T>(url: string | null, pollMs?: number) {
   }, [url]);
 
   useEffect(() => {
-    reload();
-    if (pollMs) {
-      const id = setInterval(reload, pollMs);
-      return () => clearInterval(id);
-    }
+    // Primeiro fetch adiado pra um callback (loading já inicia true, sem flash).
+    const first = setTimeout(reload, 0);
+    const id = pollMs ? setInterval(reload, pollMs) : undefined;
+    return () => {
+      clearTimeout(first);
+      if (id) clearInterval(id);
+    };
   }, [reload, pollMs]);
 
   // setData permite atualização otimista (ex.: Revisão marca a peça decidida na hora).

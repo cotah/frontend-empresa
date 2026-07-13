@@ -13,9 +13,14 @@ import type { ApprovalsCount, CfoSummary } from "@/lib/types";
 function Clock() {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
-    setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
+    const tick = () => setNow(new Date());
+    // Primeiro tick assíncrono — sem setState síncrono no corpo do efeito.
+    const first = setTimeout(tick, 0);
+    const id = setInterval(tick, 1000);
+    return () => {
+      clearTimeout(first);
+      clearInterval(id);
+    };
   }, []);
   return (
     <span className="font-mono text-xs text-muted-foreground tabular-nums" suppressHydrationWarning>

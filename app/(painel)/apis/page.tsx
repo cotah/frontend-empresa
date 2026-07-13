@@ -34,15 +34,19 @@ export default function ApisPage() {
   const [notes, setNotes] = useState<Notes>({});
   const [loaded, setLoaded] = useState(false);
 
-  // Carrega do localStorage só no browser (evita mismatch de hidratação)
+  // Carrega do localStorage só no browser (evita mismatch de hidratação).
+  // Leitura adiada pra um callback — sem setState síncrono no corpo do efeito.
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setNotes(JSON.parse(raw) as Notes);
-    } catch {
-      // JSON corrompido — começa do zero
-    }
-    setLoaded(true);
+    const id = setTimeout(() => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) setNotes(JSON.parse(raw) as Notes);
+      } catch {
+        // JSON corrompido — começa do zero
+      }
+      setLoaded(true);
+    }, 0);
+    return () => clearTimeout(id);
   }, []);
 
   function update(key: string, field: keyof ProviderNote, value: string) {

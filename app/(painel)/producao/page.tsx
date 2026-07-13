@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Check, DoorOpen, Images, Loader2, Rocket, StepForward, X } from "lucide-react";
@@ -62,7 +62,7 @@ function currentStepIndex(run: OrchestrationRun | null): number {
 export default function ProducaoPage() {
   const t = useTranslations("producao");
   const [productName, setProductName] = useState("");
-  const [activeRunId, setActiveRunId] = useState<string | null>(null);
+  const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const [advancing, setAdvancing] = useState(false);
   const [busyGateId, setBusyGateId] = useState<string | null>(null);
@@ -70,6 +70,12 @@ export default function ProducaoPage() {
   const [error, setError] = useState<string | null>(null);
 
   const runs = useApi<OrchestrationRun[]>("/api/esteira/runs", 30_000);
+
+  // Sem seleção explícita: o mais recente ainda em andamento (ou o último).
+  const defaultRun =
+    runs.data?.find((r) => r.status === "running" || r.status === "awaiting_gate") ?? runs.data?.[0];
+  const activeRunId = selectedRunId ?? defaultRun?.id ?? null;
+
   const run = useApi<OrchestrationRun>(
     activeRunId ? `/api/esteira/run?id=${activeRunId}` : null,
     5_000,
@@ -78,13 +84,6 @@ export default function ProducaoPage() {
     activeRunId ? `/api/esteira/gates?run_id=${activeRunId}&status=pending` : null,
     7_000,
   );
-
-  // Sem run selecionado: retoma o mais recente ainda em andamento (ou o último).
-  useEffect(() => {
-    if (activeRunId || !runs.data?.length) return;
-    const active = runs.data.find((r) => r.status === "running" || r.status === "awaiting_gate");
-    setActiveRunId((active ?? runs.data[0]).id);
-  }, [activeRunId, runs.data]);
 
   const current = currentStepIndex(run.data ?? null);
   const currentStep = STEPS[current];
@@ -114,7 +113,7 @@ export default function ProducaoPage() {
       });
       const id = resp.run_id ?? resp.id;
       if (!id) throw new Error(t("errors.noRunId"));
-      setActiveRunId(id);
+      setSelectedRunId(id);
       setProductName("");
       runs.reload();
     } catch (e) {
@@ -393,7 +392,7 @@ export default function ProducaoPage() {
             {runs.data?.map((r) => (
               <button
                 key={r.id}
-                onClick={() => setActiveRunId(r.id)}
+                onClick={() => setSelectedRunId(r.id)}
                 className={cn(
                   "flex w-full items-center justify-between gap-3 border-b border-border bg-card px-4 py-3 text-left text-sm last:border-b-0 hover:bg-muted/40",
                   r.id === activeRunId && "bg-primary/10",

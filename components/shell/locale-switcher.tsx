@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import { LOCALES, LOCALE_COOKIE, type Locale } from "@/i18n/config";
 import { cn } from "@/lib/utils";
 
+/** Grava o cookie de locale (1 ano). Fora do componente — mutação de API do browser. */
+function persistLocale(next: Locale) {
+  document.cookie = `${LOCALE_COOKIE}=${next};path=/;max-age=31536000;samesite=lax`;
+}
+
 /** Seletor PT · EN · ES — grava o cookie e re-renderiza com o novo locale. */
 export function LocaleSwitcher() {
   const locale = useLocale();
@@ -12,7 +17,7 @@ export function LocaleSwitcher() {
 
   function change(next: Locale) {
     if (next === locale) return;
-    document.cookie = `${LOCALE_COOKIE}=${next};path=/;max-age=31536000;samesite=lax`;
+    persistLocale(next);
     router.refresh();
   }
 
