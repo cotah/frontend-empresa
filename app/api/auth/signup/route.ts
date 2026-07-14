@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/server/supabase";
 import { UpstreamError } from "@/lib/server/upstream";
 import { fail } from "@/lib/server/route-helpers";
+import { isLocale } from "@/i18n/config";
 
 /**
  * Cria a conta no Supabase Auth. O gatilho on_auth_user_created (no banco)
@@ -9,7 +10,7 @@ import { fail } from "@/lib/server/route-helpers";
  */
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, name, phone, termsAccepted, marketingOptIn } = (await req
+    const { email, password, name, phone, termsAccepted, marketingOptIn, locale } = (await req
       .json()
       .catch(() => ({}))) as {
       email?: string;
@@ -18,6 +19,7 @@ export async function POST(req: NextRequest) {
       phone?: string;
       termsAccepted?: boolean;
       marketingOptIn?: boolean;
+      locale?: string;
     };
     if (!email || !password || !name?.trim() || !phone?.trim()) {
       throw new UpstreamError("Nome, telefone, e-mail e senha são obrigatórios", 400);
@@ -39,6 +41,9 @@ export async function POST(req: NextRequest) {
           phone: phone.trim(),
           terms_accepted: true,
           marketing_opt_in: marketingOptIn === true,
+          // Idioma da interface no momento do cadastro — usado pelos templates
+          // de e-mail do Supabase via {{ .Data.locale }} (default EN no template).
+          locale: isLocale(locale) ? locale : "en",
         },
       },
     });

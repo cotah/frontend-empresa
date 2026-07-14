@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthCard } from "@/components/auth/auth-card";
 
 export default function CadastroPage() {
   const t = useTranslations("auth");
+  const locale = useLocale();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -42,6 +43,7 @@ export default function CadastroPage() {
           password,
           termsAccepted,
           marketingOptIn,
+          locale,
         }),
       });
       const json = await res.json().catch(() => ({}));
