@@ -15,7 +15,7 @@
     "revisao": "Revisão de Criação",
     "agentes": "Agentes",
     "atividade": "Atividade",
-    "apis": "APIs / Saldos"
+    "billing": "Billing"
   },
   "shell": {
     "brandTag": "command deck",
@@ -176,16 +176,14 @@
     "genericError": "Erro",
     "requestError": "Erro {status}"
   },
-  "apis": {
-    "kicker": "créditos",
-    "title": "APIs / Saldos",
-    "description": "Controle manual dos créditos de cada provedor usado pelos agentes.",
-    "manualNoteTitle": "Anotação manual.",
-    "manualNoteBody": "Esses provedores não expõem saldo via API, então os valores aqui são preenchidos à mão e ficam salvos só neste navegador. Use o link de cada card pra conferir o valor real no dashboard oficial.",
-    "dashboardLink": "dashboard",
-    "balanceLabel": "saldo / créditos",
-    "balancePlaceholder": "ex.: US$ 42,00 ou 1.500 créditos",
-    "lastRechargeLabel": "última recarga"
+  "billing": {
+    "kicker": "conta",
+    "title": "Billing",
+    "description": "Seu saldo de Caps, plano atual e histórico de pagamentos.",
+    "capsLabel": "saldo de caps",
+    "planLabel": "plano atual",
+    "paymentsTitle": "Últimos pagamentos",
+    "paymentsEmpty": "Nenhum pagamento ainda — o histórico vai aparecer aqui quando os pagamentos forem ativados."
   },
   "ideias": {
     "kicker": "banco de ideias",

@@ -15,7 +15,7 @@
     "revisao": "Creative Review",
     "agentes": "Agents",
     "atividade": "Activity",
-    "apis": "APIs / Balances"
+    "billing": "Billing"
   },
   "shell": {
     "brandTag": "command deck",
@@ -176,16 +176,14 @@
     "genericError": "Error",
     "requestError": "Error {status}"
   },
-  "apis": {
-    "kicker": "credits",
-    "title": "APIs / Balances",
-    "description": "Manual tracking of credits for each provider the agents use.",
-    "manualNoteTitle": "Manual note.",
-    "manualNoteBody": "These providers don't expose balances via API, so the values here are filled in by hand and saved only in this browser. Use each card's link to check the real value on the official dashboard.",
-    "dashboardLink": "dashboard",
-    "balanceLabel": "balance / credits",
-    "balancePlaceholder": "e.g. US$ 42.00 or 1,500 credits",
-    "lastRechargeLabel": "last top-up"
+  "billing": {
+    "kicker": "account",
+    "title": "Billing",
+    "description": "Your Caps balance, current plan and payment history.",
+    "capsLabel": "caps balance",
+    "planLabel": "current plan",
+    "paymentsTitle": "Recent payments",
+    "paymentsEmpty": "No payments yet — history will show up here once payments go live."
   },
   "ideias": {
     "kicker": "idea bank",

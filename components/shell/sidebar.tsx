@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import {
   Activity,
   Bot,
+  CreditCard,
   Factory,
-  Gauge,
   Images,
   LayoutDashboard,
   Lightbulb,
@@ -30,7 +30,7 @@ const NAV = [
   { href: "/revisao", key: "revisao", icon: Images },
   { href: "/agentes", key: "agentes", icon: Bot },
   { href: "/atividade", key: "atividade", icon: Activity },
-  { href: "/apis", key: "apis", icon: Gauge },
+  { href: "/billing", key: "billing", icon: CreditCard },
 ] as const;
 
 export function Sidebar() {
