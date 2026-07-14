@@ -9,19 +9,38 @@ import { fail } from "@/lib/server/route-helpers";
  */
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = (await req.json().catch(() => ({}))) as {
+    const { email, password, name, phone, termsAccepted, marketingOptIn } = (await req
+      .json()
+      .catch(() => ({}))) as {
       email?: string;
       password?: string;
+      name?: string;
+      phone?: string;
+      termsAccepted?: boolean;
+      marketingOptIn?: boolean;
     };
-    if (!email || !password) {
-      throw new UpstreamError("E-mail e senha são obrigatórios", 400);
+    if (!email || !password || !name?.trim() || !phone?.trim()) {
+      throw new UpstreamError("Nome, telefone, e-mail e senha são obrigatórios", 400);
+    }
+    if (termsAccepted !== true) {
+      throw new UpstreamError("É preciso aceitar os Termos & Condições", 400);
     }
 
     const supabase = await supabaseServer();
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${req.nextUrl.origin}/login` },
+      options: {
+        emailRedirectTo: `${req.nextUrl.origin}/login`,
+        // O gatilho no banco grava contact_name, contact_phone,
+        // terms_accepted_at e marketing_opt_in na conta a partir daqui.
+        data: {
+          full_name: name.trim(),
+          phone: phone.trim(),
+          terms_accepted: true,
+          marketing_opt_in: marketingOptIn === true,
+        },
+      },
     });
     if (error) {
       if (error.code === "user_already_exists") {
