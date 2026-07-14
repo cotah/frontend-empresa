@@ -35,12 +35,6 @@ async function jsonOrThrow(res: Response, label: string): Promise<unknown> {
 // usuário logado — por isso as funções abaixo EXIGEM accountId na assinatura.
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Anexa account_id como query param (respeita ? já existente no path). */
-function withAccountParam(path: string, accountId: string): string {
-  const sep = path.includes("?") ? "&" : "?";
-  return `${path}${sep}account_id=${encodeURIComponent(accountId)}`;
-}
-
 /** POST num webhook do n8n (CEO, gates, pontes, dispatch) — account_id sempre no corpo. */
 export async function n8nPost(
   path: string,
@@ -56,27 +50,26 @@ export async function n8nPost(
   return jsonOrThrow(res, `n8n ${path}`);
 }
 
-/** Chamada ao CFO Railway (FastAPI) — account_id no corpo (POST) ou na query (GET). */
+/** Chamada ao CFO Railway (FastAPI) — account_id sempre no header X-Account-Id. */
 export async function cfoFetch(
   path: string,
   accountId: string,
   init?: { method?: string; body?: Record<string, unknown> },
 ): Promise<unknown> {
-  const hasBody = init?.body !== undefined;
-  const url = `${need("CFO_BASE")}${hasBody ? path : withAccountParam(path, accountId)}`;
-  const res = await fetch(url, {
+  const res = await fetch(`${need("CFO_BASE")}${path}`, {
     method: init?.method ?? "GET",
     headers: {
       "Content-Type": "application/json",
       "X-API-Key": need("CFO_API_KEY"),
+      "X-Account-Id": accountId,
     },
-    body: hasBody ? JSON.stringify({ ...init.body, account_id: accountId }) : undefined,
+    body: init?.body !== undefined ? JSON.stringify(init.body) : undefined,
     cache: "no-store",
   });
   return jsonOrThrow(res, `CFO ${path}`);
 }
 
-/** Chamada ao backend Busca Railway com X-API-Key (read ou control). */
+/** Chamada ao backend Busca Railway com X-API-Key (read ou control) — account_id sempre no header X-Account-Id. */
 export async function buscaFetch(
   path: string,
   accountId: string,
@@ -84,12 +77,14 @@ export async function buscaFetch(
   init?: { method?: string; body?: Record<string, unknown> },
 ): Promise<unknown> {
   const key = auth === "read" ? need("READ_API_KEY") : need("CONTROL_API_KEY");
-  const hasBody = init?.body !== undefined;
-  const url = `${need("BUSCA_BASE")}${hasBody ? path : withAccountParam(path, accountId)}`;
-  const res = await fetch(url, {
+  const res = await fetch(`${need("BUSCA_BASE")}${path}`, {
     method: init?.method ?? "GET",
-    headers: { "Content-Type": "application/json", "X-API-Key": key },
-    body: hasBody ? JSON.stringify({ ...init.body, account_id: accountId }) : undefined,
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": key,
+      "X-Account-Id": accountId,
+    },
+    body: init?.body !== undefined ? JSON.stringify(init.body) : undefined,
     cache: "no-store",
   });
   return jsonOrThrow(res, `Busca ${path}`);
