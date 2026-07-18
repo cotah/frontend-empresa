@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { OpportunityHunter } from "@/components/opportunity-hunter";
 import { useApi, postJson } from "@/lib/hooks";
 import { fmtDate } from "@/lib/format";
 import type { BrandContext, BuscaOpportunity, ProductIdea } from "@/lib/types";
@@ -27,9 +28,17 @@ interface BuscaList {
 
 export default function IdeiasPage() {
   const t = useTranslations("ideias");
+  const tHunter = useTranslations("hunter");
   const ideas = useApi<ProductIdea[]>("/api/ideas");
   const busca = useApi<BuscaList>("/api/busca/opportunities");
   const brands = useApi<BrandContext[]>("/api/brands");
+
+  // Sugestão de tema pro Caçador: público-alvo (ou descrição) da marca mais recente.
+  const firstBrand = brands.data?.[0];
+  const suggestedTopic =
+    (typeof firstBrand?.target_audience === "string" && firstBrand.target_audience) ||
+    (typeof firstBrand?.description === "string" && firstBrand.description) ||
+    "";
 
   const [ideaText, setIdeaText] = useState("");
   const [verdict, setVerdict] = useState<unknown>(null);
@@ -110,6 +119,13 @@ export default function IdeiasPage() {
             ))}
           </div>
         </AsyncPanel>
+      </section>
+
+      {/* Caçador de Oportunidades (config da Busca) */}
+      <section className="reveal mt-8" style={{ animationDelay: "80ms" }}>
+        <h2 className="font-heading text-lg font-semibold mb-1">{tHunter("title")}</h2>
+        <p className="mb-3 text-sm text-muted-foreground">{tHunter("description")}</p>
+        <OpportunityHunter suggestedTopic={suggestedTopic} suggestionLoading={brands.loading} />
       </section>
 
       {/* Oportunidades da Busca */}

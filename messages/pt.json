@@ -203,6 +203,32 @@
     "brandsEmpty": "Nenhuma marca criada ainda.",
     "productFallback": "produto"
   },
+  "hunter": {
+    "title": "Caçador de Oportunidades",
+    "description": "Configure a Busca pra garimpar oportunidades sozinha, no tema e na frequência que você escolher.",
+    "toggleLabel": "Ligar ou desligar o Caçador",
+    "enabled": "Ligado",
+    "disabled": "Desligado",
+    "frequencyLabel": "Frequência",
+    "freq": {
+      "manual": "Manual",
+      "daily": "Diário",
+      "weekly": "Semanal",
+      "monthly": "Mensal"
+    },
+    "topicLabel": "Tema da busca",
+    "topicPlaceholder": "Ex.: oportunidades para manicure em Dublin",
+    "save": "Salvar configuração",
+    "saving": "Salvando…",
+    "saved": "Configuração salva.",
+    "runNow": "Buscar agora",
+    "runningNow": "Buscando…",
+    "runStarted": "Rodada iniciada — as oportunidades aparecem abaixo quando ficarem prontas.",
+    "capsWarning": "Cada rodada consome Caps do seu saldo.",
+    "lastRun": "última rodada",
+    "nextRun": "próxima rodada",
+    "genericError": "Erro"
+  },
   "agentes": {
     "kicker": "roster",
     "title": "Agentes",

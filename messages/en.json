@@ -203,6 +203,32 @@
     "brandsEmpty": "No brands created yet.",
     "productFallback": "product"
   },
+  "hunter": {
+    "title": "Opportunity Hunter",
+    "description": "Set Busca up to mine opportunities on its own, with the topic and frequency you choose.",
+    "toggleLabel": "Turn the Hunter on or off",
+    "enabled": "On",
+    "disabled": "Off",
+    "frequencyLabel": "Frequency",
+    "freq": {
+      "manual": "Manual",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "topicLabel": "Search topic",
+    "topicPlaceholder": "E.g.: opportunities for manicurists in Dublin",
+    "save": "Save settings",
+    "saving": "Saving…",
+    "saved": "Settings saved.",
+    "runNow": "Search now",
+    "runningNow": "Searching…",
+    "runStarted": "Run started — opportunities will show up below once they're ready.",
+    "capsWarning": "Each run spends Caps from your balance.",
+    "lastRun": "last run",
+    "nextRun": "next run",
+    "genericError": "Error"
+  },
   "agentes": {
     "kicker": "roster",
     "title": "Agents",

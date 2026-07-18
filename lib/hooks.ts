@@ -46,8 +46,17 @@ export function useApi<T>(url: string | null, pollMs?: number) {
 
 /** POST JSON num endpoint /api/* com erro legível. */
 export async function postJson<T>(url: string, body: unknown): Promise<T> {
+  return sendJson(url, "POST", body);
+}
+
+/** PUT JSON num endpoint /api/* com erro legível. */
+export async function putJson<T>(url: string, body: unknown): Promise<T> {
+  return sendJson(url, "PUT", body);
+}
+
+async function sendJson<T>(url: string, method: "POST" | "PUT", body: unknown): Promise<T> {
   const res = await fetch(url, {
-    method: "POST",
+    method,
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });

@@ -203,6 +203,32 @@
     "brandsEmpty": "Ninguna marca creada todavía.",
     "productFallback": "producto"
   },
+  "hunter": {
+    "title": "Cazador de Oportunidades",
+    "description": "Configura la Busca para minar oportunidades sola, con el tema y la frecuencia que elijas.",
+    "toggleLabel": "Encender o apagar el Cazador",
+    "enabled": "Encendido",
+    "disabled": "Apagado",
+    "frequencyLabel": "Frecuencia",
+    "freq": {
+      "manual": "Manual",
+      "daily": "Diario",
+      "weekly": "Semanal",
+      "monthly": "Mensual"
+    },
+    "topicLabel": "Tema de búsqueda",
+    "topicPlaceholder": "Ej.: oportunidades para manicuristas en Dublín",
+    "save": "Guardar configuración",
+    "saving": "Guardando…",
+    "saved": "Configuración guardada.",
+    "runNow": "Buscar ahora",
+    "runningNow": "Buscando…",
+    "runStarted": "Ronda iniciada — las oportunidades aparecerán abajo cuando estén listas.",
+    "capsWarning": "Cada ronda consume Caps de tu saldo.",
+    "lastRun": "última ronda",
+    "nextRun": "próxima ronda",
+    "genericError": "Error"
+  },
   "agentes": {
     "kicker": "roster",
     "title": "Agentes",

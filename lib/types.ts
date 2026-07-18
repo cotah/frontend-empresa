@@ -89,6 +89,17 @@ export interface BuscaOpportunity {
   [key: string]: unknown;
 }
 
+export type HuntFrequency = "manual" | "daily" | "weekly" | "monthly";
+
+/** Configuração do Caçador de Oportunidades (backend Busca, /hunt/settings). */
+export interface HuntSettings {
+  enabled: boolean;
+  frequency: HuntFrequency;
+  topic: string;
+  last_run_at: string | null;
+  next_run_at: string | null;
+}
+
 export interface CeoChatResponse {
   agent: string;
   reply: string;
