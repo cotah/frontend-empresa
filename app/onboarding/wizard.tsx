@@ -54,7 +54,6 @@ export function OnboardingWizard({
   const set = (key: keyof Fields) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setF((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const step1Ok = f.companyName.trim().length > 0;
   const step2Ok =
     f.brandName.trim().length > 0 && f.description.trim().length > 0 && f.howItWorks.trim().length > 0;
 
@@ -124,7 +123,8 @@ export function OnboardingWizard({
         {step === 1 && (
           <div className="space-y-4">
             <h2 className="font-heading text-lg font-semibold">{t("company.title")}</h2>
-            <Field label={t("company.nameLabel")} required>
+            <p className="text-xs text-muted-foreground">{t("company.hint")}</p>
+            <Field label={t("company.nameLabel")} optional={t("optional")}>
               <Input value={f.companyName} onChange={set("companyName")} autoFocus />
             </Field>
             <Field label={t("company.countryLabel")} optional={t("optional")}>
@@ -139,9 +139,22 @@ export function OnboardingWizard({
                 <Input value={f.website} onChange={set("website")} placeholder="https://" />
               </Field>
             </div>
-            <Button className="w-full font-heading" disabled={!step1Ok} onClick={() => setStep(2)}>
-              {t("next")}
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                variant="ghost"
+                className="font-heading"
+                onClick={() => {
+                  // Pular = descarta o que foi digitado e mantém a conta como está.
+                  setF((prev) => ({ ...prev, ...initial }));
+                  setStep(2);
+                }}
+              >
+                {t("skipForNow")}
+              </Button>
+              <Button className="flex-1 font-heading" onClick={() => setStep(2)}>
+                {t("next")}
+              </Button>
+            </div>
           </div>
         )}
 

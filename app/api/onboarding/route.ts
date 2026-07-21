@@ -69,13 +69,15 @@ export async function POST(req: NextRequest) {
     const { userId, accountId } = await requireAccount();
     const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
 
+    // Empresa é opcional (nem todo cliente tem uma constituída); só o bloco
+    // do produto é obrigatório — sem ele os agentes não têm o que trabalhar.
     const companyName = clean(body.companyName);
     const brandName = clean(body.brandName);
     const description = clean(body.description);
     const howItWorks = clean(body.howItWorks);
-    if (!companyName || !brandName || !description || !howItWorks) {
+    if (!brandName || !description || !howItWorks) {
       throw new UpstreamError(
-        "Nome da empresa, nome do produto, descrição e como funciona são obrigatórios",
+        "Nome do produto, descrição e como funciona são obrigatórios",
         400,
       );
     }
@@ -122,7 +124,8 @@ export async function POST(req: NextRequest) {
     // Empresa + carimbo de conclusão por último: se algo acima falhar, o
     // assistente reaparece no próximo login e o cliente tenta de novo.
     await updateAccount(accountId, {
-      name: companyName,
+      // Sem nome informado, accounts.name fica como está (cliente pulou a tela).
+      ...(companyName ? { name: companyName } : {}),
       country: clean(body.country),
       city: clean(body.city),
       website: clean(body.website),
