@@ -1,4 +1,44 @@
 {
+  "onboarding": {
+    "subtitle": "let's set up your machine",
+    "step": "Step {current} of {total}",
+    "next": "Continue",
+    "back": "Back",
+    "skip": "Skip",
+    "finish": "Finish",
+    "finishBusy": "Saving…",
+    "failed": "Could not save, please try again",
+    "optional": "optional",
+    "company": {
+      "title": "Your company",
+      "nameLabel": "Company name",
+      "countryLabel": "Country",
+      "countryPlaceholder": "United States",
+      "countryHint": "Your country sets the jurisdiction for legal documents and the market for SEO and ads — worth filling in.",
+      "cityLabel": "City",
+      "websiteLabel": "Website"
+    },
+    "product": {
+      "title": "Your product or service",
+      "brandNameLabel": "Product or brand name",
+      "descriptionLabel": "What it is / what it solves",
+      "howItWorksLabel": "How customers use it (step by step)",
+      "howItWorksHint": "The single most important field: it's what makes the agents truly understand your product.",
+      "priceLabel": "Price",
+      "targetAudienceLabel": "Target audience"
+    },
+    "brand": {
+      "title": "Your brand",
+      "hint": "All optional — you can adjust it later.",
+      "toneLabel": "Tone of voice",
+      "tonePlaceholder": "e.g. direct, playful, technical…",
+      "taglineLabel": "Tagline",
+      "colorsLabel": "Brand colors",
+      "primaryLabel": "Primary",
+      "bgLabel": "Background",
+      "textLabel": "Text"
+    }
+  },
   "common": {
     "retry": "Try again",
     "empty": "No records 🎉",

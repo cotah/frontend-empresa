@@ -1,4 +1,44 @@
 {
+  "onboarding": {
+    "subtitle": "vamos preparar sua máquina",
+    "step": "Passo {current} de {total}",
+    "next": "Continuar",
+    "back": "Voltar",
+    "skip": "Pular",
+    "finish": "Concluir",
+    "finishBusy": "Salvando…",
+    "failed": "Não foi possível salvar, tente de novo",
+    "optional": "opcional",
+    "company": {
+      "title": "Sua empresa",
+      "nameLabel": "Nome da empresa",
+      "countryLabel": "País",
+      "countryPlaceholder": "Brasil",
+      "countryHint": "O país define a jurisdição dos documentos legais e o mercado do SEO e dos anúncios — vale preencher.",
+      "cityLabel": "Cidade",
+      "websiteLabel": "Site"
+    },
+    "product": {
+      "title": "Seu produto ou serviço",
+      "brandNameLabel": "Nome do produto ou marca",
+      "descriptionLabel": "O que é / o que resolve",
+      "howItWorksLabel": "Como o cliente usa (passo a passo)",
+      "howItWorksHint": "O campo mais importante de todos: é o que faz os agentes entenderem seu produto de verdade.",
+      "priceLabel": "Preço",
+      "targetAudienceLabel": "Público-alvo"
+    },
+    "brand": {
+      "title": "Sua marca",
+      "hint": "Tudo opcional — dá pra ajustar depois.",
+      "toneLabel": "Tom de voz",
+      "tonePlaceholder": "ex.: direto, bem-humorado, técnico…",
+      "taglineLabel": "Slogan",
+      "colorsLabel": "Cores da marca",
+      "primaryLabel": "Principal",
+      "bgLabel": "Fundo",
+      "textLabel": "Texto"
+    }
+  },
   "common": {
     "retry": "Tentar de novo",
     "empty": "Nenhum registro 🎉",

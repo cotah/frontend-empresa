@@ -115,3 +115,62 @@ export async function supabaseSelect(
   const scoped = `account_id=eq.${encodeURIComponent(accountId)}${query ? `&${query}` : ""}`;
   return supabaseAdminSelect(table, scoped);
 }
+
+/** Escrita CRUA no Supabase REST (POST/PATCH) — uso interno dos helpers escopados. */
+async function supabaseAdminMutate(
+  table: string,
+  query: string,
+  method: "POST" | "PATCH",
+  body: Record<string, unknown>,
+): Promise<unknown> {
+  const key = need("SUPABASE_SERVICE_KEY");
+  const url = `${need("SUPABASE_URL")}/rest/v1/${table}${query ? `?${query}` : ""}`;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation",
+    },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+  return jsonOrThrow(res, `Supabase ${table}`);
+}
+
+/** INSERT escopado por conta: o account_id do usuário logado sobrescreve qualquer valor do corpo. */
+export async function supabaseInsert(
+  table: string,
+  accountId: string,
+  row: Record<string, unknown>,
+): Promise<unknown> {
+  return supabaseAdminMutate(table, "", "POST", { ...row, account_id: accountId });
+}
+
+/** UPDATE escopado por conta: só toca linhas com account_id=eq.<id> (+ filtro extra opcional). */
+export async function supabasePatch(
+  table: string,
+  accountId: string,
+  patch: Record<string, unknown>,
+  query = "",
+): Promise<unknown> {
+  const scoped = `account_id=eq.${encodeURIComponent(accountId)}${query ? `&${query}` : ""}`;
+  return supabaseAdminMutate(table, scoped, "PATCH", patch);
+}
+
+/**
+ * UPDATE na própria linha da conta (accounts não tem account_id — o escopo é o id).
+ * Campos permitidos ficam restritos no chamador; aqui só amarra o WHERE ao id.
+ */
+export async function updateAccount(
+  accountId: string,
+  patch: Record<string, unknown>,
+): Promise<unknown> {
+  return supabaseAdminMutate(
+    "accounts",
+    `id=eq.${encodeURIComponent(accountId)}`,
+    "PATCH",
+    patch,
+  );
+}

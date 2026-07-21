@@ -82,3 +82,29 @@ export async function requireAccount(): Promise<AccountContext> {
   });
   return { userId, email, accountId, workspaceName };
 }
+
+/** Derruba o cache do vínculo (ex.: onboarding renomeou a empresa → topbar atualiza já). */
+export function invalidateMembership(userId: string) {
+  membershipCache.delete(userId);
+}
+
+// Contas que JÁ concluíram o onboarding — estado que nunca reverte, então o
+// cache não tem TTL. Conta pendente não entra aqui (revalida a cada request).
+const onboardedCache = new Set<string>();
+
+/** true se a conta já concluiu o onboarding (accounts.onboarding_completed_at ≠ null). */
+export async function isOnboarded(accountId: string): Promise<boolean> {
+  if (onboardedCache.has(accountId)) return true;
+  const rows = (await supabaseAdminSelect(
+    "accounts",
+    `select=onboarding_completed_at&id=eq.${encodeURIComponent(accountId)}&limit=1`,
+  )) as Array<{ onboarding_completed_at: string | null }>;
+  const done = !!rows[0]?.onboarding_completed_at;
+  if (done) onboardedCache.add(accountId);
+  return done;
+}
+
+/** Marca a conta como onboarded no cache local (chamado logo após gravar no banco). */
+export function markOnboarded(accountId: string) {
+  onboardedCache.add(accountId);
+}

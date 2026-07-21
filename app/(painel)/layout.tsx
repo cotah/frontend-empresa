@@ -1,7 +1,15 @@
+import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/shell/sidebar";
 import { Topbar } from "@/components/shell/topbar";
+import { requireAccount, isOnboarded } from "@/lib/server/supabase";
 
-export default function PainelLayout({ children }: { children: React.ReactNode }) {
+export default async function PainelLayout({ children }: { children: React.ReactNode }) {
+  // Conta nova (onboarding_completed_at nulo) vai pro assistente antes do painel.
+  // Depois de concluído o status fica em cache — custo zero nos acessos seguintes.
+  const ctx = await requireAccount().catch(() => null);
+  if (!ctx) redirect("/login");
+  if (!(await isOnboarded(ctx.accountId))) redirect("/onboarding");
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
