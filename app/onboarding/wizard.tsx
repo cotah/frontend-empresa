@@ -57,8 +57,13 @@ export function OnboardingWizard({
   const step2Ok =
     f.brandName.trim().length > 0 && f.description.trim().length > 0 && f.howItWorks.trim().length > 0;
 
-  /** skipBrand=true (botão Pular da tela 3) conclui sem os campos de marca. */
-  async function finish(skipBrand: boolean) {
+  /**
+   * Conclui o assistente enviando só os blocos preenchidos:
+   * - "skipProduct" (Pular da tela 2): só empresa — sem produto não há marca.
+   * - "skipBrand" (Pular da tela 3): empresa + produto, marca com defaults.
+   * - "full": tudo.
+   */
+  async function finish(mode: "full" | "skipBrand" | "skipProduct") {
     setBusy(true);
     setError(null);
     try {
@@ -67,20 +72,24 @@ export function OnboardingWizard({
         country: f.country,
         city: f.city,
         website: f.website,
-        brandName: f.brandName,
-        description: f.description,
-        howItWorks: f.howItWorks,
-        price: f.price,
-        targetAudience: f.targetAudience,
-        ...(skipBrand
+        ...(mode === "skipProduct"
           ? {}
           : {
+              brandName: f.brandName,
+              description: f.description,
+              howItWorks: f.howItWorks,
+              price: f.price,
+              targetAudience: f.targetAudience,
+            }),
+        ...(mode === "full"
+          ? {
               toneOfVoice: f.toneOfVoice,
               tagline: f.tagline,
               primaryColor: f.primaryColor,
               bgColor: f.bgColor,
               textColor: f.textColor,
-            }),
+            }
+          : {}),
       };
       const res = await fetch("/api/onboarding", {
         method: "POST",
@@ -161,6 +170,7 @@ export function OnboardingWizard({
         {step === 2 && (
           <div className="space-y-4">
             <h2 className="font-heading text-lg font-semibold">{t("product.title")}</h2>
+            <p className="text-xs text-muted-foreground">{t("product.hint")}</p>
             <Field label={t("product.brandNameLabel")} required>
               <Input value={f.brandName} onChange={set("brandName")} autoFocus />
             </Field>
@@ -179,11 +189,16 @@ export function OnboardingWizard({
                 <Input value={f.targetAudience} onChange={set("targetAudience")} />
               </Field>
             </div>
+            {error && <p className="text-xs text-danger">{error}</p>}
             <div className="flex gap-3">
-              <Button variant="outline" className="font-heading" onClick={() => setStep(1)}>
+              <Button variant="outline" className="font-heading" disabled={busy} onClick={() => setStep(1)}>
                 {t("back")}
               </Button>
-              <Button className="flex-1 font-heading" disabled={!step2Ok} onClick={() => setStep(3)}>
+              {/* Sem produto não há marca pra configurar: pular aqui conclui direto. */}
+              <Button variant="ghost" className="font-heading" disabled={busy} onClick={() => finish("skipProduct")}>
+                {busy ? t("finishBusy") : t("skipForNow")}
+              </Button>
+              <Button className="flex-1 font-heading" disabled={!step2Ok || busy} onClick={() => setStep(3)}>
                 {t("next")}
               </Button>
             </div>
@@ -212,10 +227,10 @@ export function OnboardingWizard({
               <Button variant="outline" className="font-heading" disabled={busy} onClick={() => setStep(2)}>
                 {t("back")}
               </Button>
-              <Button variant="ghost" className="font-heading" disabled={busy} onClick={() => finish(true)}>
+              <Button variant="ghost" className="font-heading" disabled={busy} onClick={() => finish("skipBrand")}>
                 {t("skip")}
               </Button>
-              <Button className="flex-1 font-heading" disabled={busy} onClick={() => finish(false)}>
+              <Button className="flex-1 font-heading" disabled={busy} onClick={() => finish("full")}>
                 {busy ? t("finishBusy") : t("finish")}
               </Button>
             </div>

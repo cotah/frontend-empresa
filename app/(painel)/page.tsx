@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { ArrowRight, MessagesSquare } from "lucide-react";
+import { ArrowRight, MessagesSquare, Radar } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { StatCard } from "@/components/stat-card";
 import { AsyncPanel } from "@/components/async-panel";
@@ -10,13 +10,14 @@ import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { useApi } from "@/lib/hooks";
 import { fmtMoney, timeAgo } from "@/lib/format";
-import type { ApprovalsCount, CfoSummary, WorkLogEntry } from "@/lib/types";
+import type { ApprovalsCount, BrandContext, CfoSummary, WorkLogEntry } from "@/lib/types";
 
 export default function HomePage() {
   const t = useTranslations("dashboard");
   const cfo = useApi<CfoSummary>("/api/cfo/reports", 60_000);
   const counts = useApi<ApprovalsCount>("/api/approvals/count", 45_000);
   const worklog = useApi<WorkLogEntry[]>("/api/worklog?limit=8", 60_000);
+  const brands = useApi<BrandContext[]>("/api/brands", 300_000);
 
   return (
     <div>
@@ -30,6 +31,23 @@ export default function HomePage() {
           </Button>
         }
       />
+
+      {/* Estado vazio: onboarding pulado sem produto — aponta os caminhos
+          pra descobrir o que vender em vez de deixar o painel morto. */}
+      {brands.data?.length === 0 && (
+        <div className="reveal corner-frame mb-6 rounded-md border border-border bg-card p-6">
+          <h2 className="font-heading text-lg font-semibold">{t("noProduct.title")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("noProduct.text")}</p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Button render={<Link href="/reuniao" />} className="font-heading">
+              <MessagesSquare className="size-4 mr-1" /> {t("noProduct.ceoCta")}
+            </Button>
+            <Button variant="outline" render={<Link href="/ideias" />} className="font-heading">
+              <Radar className="size-4 mr-1" /> {t("noProduct.huntCta")}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Métricas */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

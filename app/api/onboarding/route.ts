@@ -69,56 +69,60 @@ export async function POST(req: NextRequest) {
     const { userId, accountId } = await requireAccount();
     const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
 
-    // Empresa é opcional (nem todo cliente tem uma constituída); só o bloco
-    // do produto é obrigatório — sem ele os agentes não têm o que trabalhar.
+    // Tudo opcional: o assistente inteiro pode ser pulado (cliente pode ainda
+    // não ter empresa nem produto — o Caçador e o CEO ajudam a encontrar um).
+    // Só exigimos consistência: SE veio produto, descrição e como funciona
+    // acompanham — um produto meio-cadastrado não serve pros agentes.
     const companyName = clean(body.companyName);
     const brandName = clean(body.brandName);
     const description = clean(body.description);
     const howItWorks = clean(body.howItWorks);
-    if (!brandName || !description || !howItWorks) {
+    if (brandName && (!description || !howItWorks)) {
       throw new UpstreamError(
-        "Nome do produto, descrição e como funciona são obrigatórios",
+        "Com nome do produto, descrição e como funciona são obrigatórios",
         400,
       );
     }
 
-    const brandRow = {
-      brand_name: brandName,
-      description,
-      how_it_works: howItWorks,
-      price: clean(body.price),
-      target_audience: clean(body.targetAudience),
-      tone_of_voice: clean(body.toneOfVoice),
-      tagline: clean(body.tagline),
-      primary_color: clean(body.primaryColor) ?? DEFAULT_COLORS.primary_color,
-      bg_color: clean(body.bgColor) ?? DEFAULT_COLORS.bg_color,
-      text_color: clean(body.textColor) ?? DEFAULT_COLORS.text_color,
-      website: clean(body.website),
-    };
+    if (brandName && description && howItWorks) {
+      const brandRow = {
+        brand_name: brandName,
+        description,
+        how_it_works: howItWorks,
+        price: clean(body.price),
+        target_audience: clean(body.targetAudience),
+        tone_of_voice: clean(body.toneOfVoice),
+        tagline: clean(body.tagline),
+        primary_color: clean(body.primaryColor) ?? DEFAULT_COLORS.primary_color,
+        bg_color: clean(body.bgColor) ?? DEFAULT_COLORS.bg_color,
+        text_color: clean(body.textColor) ?? DEFAULT_COLORS.text_color,
+        website: clean(body.website),
+      };
 
-    // Idempotência: se um POST anterior já criou a marca (e falhou depois),
-    // atualiza a linha existente em vez de duplicar com sufixo no slug.
-    const existing = (await supabaseSelect(
-      "brand_context",
-      accountId,
-      "select=product,brand_name",
-    )) as Array<{ product: string; brand_name: string }>;
-    const match = existing.find((b) => b.brand_name === brandName);
-
-    if (match) {
-      await supabasePatch(
+      // Idempotência: se um POST anterior já criou a marca (e falhou depois),
+      // atualiza a linha existente em vez de duplicar com sufixo no slug.
+      const existing = (await supabaseSelect(
         "brand_context",
         accountId,
-        brandRow,
-        `product=eq.${encodeURIComponent(match.product)}`,
-      );
-    } else {
-      // Slug único por conta — colidiu, acrescenta sufixo numérico.
-      const taken = new Set(existing.map((b) => b.product));
-      const base = slugify(brandName);
-      let product = base;
-      for (let n = 2; taken.has(product); n++) product = `${base}-${n}`;
-      await supabaseInsert("brand_context", accountId, { ...brandRow, product });
+        "select=product,brand_name",
+      )) as Array<{ product: string; brand_name: string }>;
+      const match = existing.find((b) => b.brand_name === brandName);
+
+      if (match) {
+        await supabasePatch(
+          "brand_context",
+          accountId,
+          brandRow,
+          `product=eq.${encodeURIComponent(match.product)}`,
+        );
+      } else {
+        // Slug único por conta — colidiu, acrescenta sufixo numérico.
+        const taken = new Set(existing.map((b) => b.product));
+        const base = slugify(brandName);
+        let product = base;
+        for (let n = 2; taken.has(product); n++) product = `${base}-${n}`;
+        await supabaseInsert("brand_context", accountId, { ...brandRow, product });
+      }
     }
 
     // Empresa + carimbo de conclusão por último: se algo acima falhar, o

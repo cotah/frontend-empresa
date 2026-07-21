@@ -22,6 +22,7 @@
     },
     "product": {
       "title": "Your product or service",
+      "hint": "No product yet? You can skip this too — the CEO and the Opportunity Hunter will help you find what to sell.",
       "brandNameLabel": "Product or brand name",
       "descriptionLabel": "What it is / what it solves",
       "howItWorksLabel": "How customers use it (step by step)",
@@ -150,6 +151,12 @@
     "backToLogin": "Back to login"
   },
   "dashboard": {
+    "noProduct": {
+      "title": "You haven't added a product yet",
+      "text": "No problem — want the CEO to help you find an opportunity?",
+      "ceoCta": "Talk to the CEO",
+      "huntCta": "Opportunity Hunter"
+    },
     "kicker": "overview",
     "title": "Home",
     "description": "The state of the company right now.",

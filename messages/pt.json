@@ -22,6 +22,7 @@
     },
     "product": {
       "title": "Seu produto ou serviço",
+      "hint": "Ainda não tem produto? Também pode pular — o CEO e o Caçador de Oportunidades te ajudam a encontrar o que vender.",
       "brandNameLabel": "Nome do produto ou marca",
       "descriptionLabel": "O que é / o que resolve",
       "howItWorksLabel": "Como o cliente usa (passo a passo)",
@@ -150,6 +151,12 @@
     "runsEmpty": "Nenhum lançamento ainda — inicia um na Linha de Produção."
   },
   "dashboard": {
+    "noProduct": {
+      "title": "Você ainda não cadastrou um produto",
+      "text": "Sem problema — quer que o CEO te ajude a encontrar uma oportunidade?",
+      "ceoCta": "Falar com o CEO",
+      "huntCta": "Caçador de Oportunidades"
+    },
     "kicker": "visão geral",
     "title": "Home",
     "description": "O estado da empresa agora.",
