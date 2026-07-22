@@ -58,7 +58,8 @@
     "revisao": "Revisão de Criação",
     "agentes": "Agentes",
     "atividade": "Atividade",
-    "billing": "Billing"
+    "billing": "Billing",
+    "configuracoes": "Configurações"
   },
   "shell": {
     "brandTag": "command deck",
@@ -368,6 +369,32 @@
       "advance": "Erro ao avançar",
       "advanceTimeoutHint": "{message} — se a fase seguiu rodando, o status acima atualiza sozinho.",
       "gate": "Erro ao decidir portão"
+    }
+  },
+  "settings": {
+    "kicker": "ajustes",
+    "title": "Configurações",
+    "description": "Edite os dados da empresa e dos seus produtos.",
+    "save": "Salvar",
+    "saving": "Salvando…",
+    "saved": "Salvo!",
+    "failed": "Não foi possível salvar, tente de novo",
+    "companyTitle": "Empresa",
+    "products": {
+      "title": "Produtos e marcas",
+      "empty": "Você ainda não cadastrou um produto.",
+      "add": "Cadastrar produto",
+      "newTitle": "Novo produto",
+      "cancel": "Cancelar"
+    },
+    "more": {
+      "title": "Mais seções",
+      "connectionsTitle": "Conexões",
+      "connectionsDesc": "Instagram, WhatsApp e Google conectados à sua conta.",
+      "soon": "em breve",
+      "billingTitle": "Assinatura e cobrança",
+      "billingDesc": "Plano, saldo de Caps e pagamentos.",
+      "billingCta": "Abrir Billing"
     }
   }
 }

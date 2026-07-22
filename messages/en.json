@@ -58,7 +58,8 @@
     "revisao": "Creative Review",
     "agentes": "Agents",
     "atividade": "Activity",
-    "billing": "Billing"
+    "billing": "Billing",
+    "configuracoes": "Settings"
   },
   "shell": {
     "brandTag": "command deck",
@@ -368,6 +369,32 @@
       "advance": "Failed to advance",
       "advanceTimeoutHint": "{message} — if the phase kept running, the status above updates on its own.",
       "gate": "Failed to decide gate"
+    }
+  },
+  "settings": {
+    "kicker": "settings",
+    "title": "Settings",
+    "description": "Edit your company and product details.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved!",
+    "failed": "Could not save, please try again",
+    "companyTitle": "Company",
+    "products": {
+      "title": "Products and brands",
+      "empty": "You haven't added a product yet.",
+      "add": "Add product",
+      "newTitle": "New product",
+      "cancel": "Cancel"
+    },
+    "more": {
+      "title": "More sections",
+      "connectionsTitle": "Connections",
+      "connectionsDesc": "Instagram, WhatsApp and Google connected to your account.",
+      "soon": "coming soon",
+      "billingTitle": "Subscription and billing",
+      "billingDesc": "Plan, Caps balance and payments.",
+      "billingCta": "Open Billing"
     }
   }
 }

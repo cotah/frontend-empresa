@@ -8,6 +8,7 @@ import {
   UpstreamError,
 } from "@/lib/server/upstream";
 import { requireAccount, invalidateMembership, markOnboarded } from "@/lib/server/supabase";
+import { slugify } from "@/lib/server/slug";
 import { fail } from "@/lib/server/route-helpers";
 
 /** Cores padrão quando o cliente pula a tela de marca (defaults sensatos). */
@@ -16,17 +17,6 @@ const DEFAULT_COLORS = {
   bg_color: "#ffffff",
   text_color: "#111827",
 };
-
-/** brand_name → slug único por conta: minúsculas, sem acento, [a-z0-9-]. */
-function slugify(name: string): string {
-  const base = name
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // remove acentos
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return base || "produto";
-}
 
 function clean(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value.trim() : null;

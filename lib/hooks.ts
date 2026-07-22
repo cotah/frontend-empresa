@@ -54,7 +54,12 @@ export async function putJson<T>(url: string, body: unknown): Promise<T> {
   return sendJson(url, "PUT", body);
 }
 
-async function sendJson<T>(url: string, method: "POST" | "PUT", body: unknown): Promise<T> {
+/** PATCH JSON num endpoint /api/* com erro legível. */
+export async function patchJson<T>(url: string, body: unknown): Promise<T> {
+  return sendJson(url, "PATCH", body);
+}
+
+async function sendJson<T>(url: string, method: "POST" | "PUT" | "PATCH", body: unknown): Promise<T> {
   const res = await fetch(url, {
     method,
     headers: { "Content-Type": "application/json" },

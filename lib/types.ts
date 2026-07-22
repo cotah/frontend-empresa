@@ -64,6 +64,18 @@ export interface BrandContext {
   id: string;
   product_slug?: string;
   product_name?: string;
+  product?: string;
+  brand_name?: string;
+  description?: string | null;
+  how_it_works?: string | null;
+  price?: string | null;
+  target_audience?: string | null;
+  tone_of_voice?: string | null;
+  tagline?: string | null;
+  primary_color?: string | null;
+  bg_color?: string | null;
+  text_color?: string | null;
+  website?: string | null;
   [key: string]: unknown;
 }
 

@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Lightbulb,
   MessagesSquare,
+  Settings,
   Stamp,
   Wallet,
 } from "lucide-react";
@@ -31,6 +32,7 @@ const NAV = [
   { href: "/agentes", key: "agentes", icon: Bot },
   { href: "/atividade", key: "atividade", icon: Activity },
   { href: "/billing", key: "billing", icon: CreditCard },
+  { href: "/configuracoes", key: "configuracoes", icon: Settings },
 ] as const;
 
 export function Sidebar() {
